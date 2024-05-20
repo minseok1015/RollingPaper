@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
                     homeScreen();
 
 
-                    //33
+                    //마지막 테스트
 
                 }
             }
