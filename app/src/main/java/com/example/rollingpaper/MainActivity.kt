@@ -8,7 +8,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.example.rollingpaper.homePage.homeScreen
+import com.example.rollingpaper.makePage.makePage
 import com.example.rollingpaper.ui.theme.RollingPaperTheme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,7 +22,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    homeScreen();
+//                    homeScreen();
+                    makePage()
 
 
                     //마지막 테스트
