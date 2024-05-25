@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.example.rollingpaper.homePage.homeScreen
+import com.example.rollingpaper.mainPage.MainPageScreen
 import com.example.rollingpaper.ui.theme.RollingPaperTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    homeScreen();
+                    MainPageScreen();
 
 
                     //n브런치 테스트 합니다.
