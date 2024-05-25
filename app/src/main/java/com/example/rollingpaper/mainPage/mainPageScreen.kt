@@ -1,21 +1,27 @@
 package com.example.rollingpaper.mainPage
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
@@ -42,7 +48,6 @@ fun MainPageScreen() {
                     for (item in rowItems) {
                         MemoItem(MemoContents = item, modifier = Modifier.weight(1f))
                     }
-                    // 빈 카드를 채워넣어서 Row가 꽉 차도록 함
                     if (rowItems.size < 3) {
                         for (i in rowItems.size until 3) {
                             Spacer(modifier = Modifier.weight(1f))
@@ -54,26 +59,39 @@ fun MainPageScreen() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MemoItem(MemoContents: Memo, modifier: Modifier = Modifier) {
     val rotationAngle = Random.nextFloat() * 10 - 5 // -5도에서 5도 사이의 랜덤 각도
 
-    Card(
-        modifier = modifier
-            .padding(8.dp)
-            .fillMaxWidth()
-            .height(150.dp)
-            .graphicsLayer(rotationZ = rotationAngle),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(
+    Box(modifier = modifier.padding(8.dp)) {
+        Card(
             modifier = Modifier
-                .padding(16.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween
+                .fillMaxWidth()
+                .height(150.dp)
+                .graphicsLayer(rotationZ = rotationAngle),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
-            Text(text = MemoContents.content)
-            Text(text = MemoContents.name, style = MaterialTheme.typography.bodySmall)
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+                    .fillMaxHeight(),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = MemoContents.content)
+                Text(text = MemoContents.name)
+            }
         }
+        BadgedBox(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .offset(x = (-8).dp, y = 8.dp),
+            badge = {
+                Badge {
+                    Text(text = "❤️", style = MaterialTheme.typography.bodySmall)
+                }
+            }
+        ) {}
     }
 }
