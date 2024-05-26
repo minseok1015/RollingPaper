@@ -8,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.example.rollingpaper.homePage.homeScreen
+import com.example.rollingpaper.makeMemo.makeMemoScreen
 import com.example.rollingpaper.ui.theme.RollingPaperTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,7 +21,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    homeScreen();
+//                    homeScreen();
+                    makeMemoScreen()
                 }
             }
         }
