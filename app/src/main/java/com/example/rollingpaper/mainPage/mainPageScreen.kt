@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
@@ -34,6 +32,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -65,77 +64,72 @@ fun MainPageScreen() {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    BoxWithConstraints {
-        val drawerWidth = maxWidth * 0.75f
-
-        ModalNavigationDrawer(
-            drawerState = drawerState,
-            drawerContent = {
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(drawerWidth)
-                        .background(Color.White)
-                        .align(Alignment.CenterEnd)
-                ) {
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .background(Color.White),
+                content = {
                     DrawerContent()
                 }
-            },
-            scrimColor = Color.Transparent // 투명색 제거
-        ) {
-            Scaffold(
-                topBar = { TopBar(onMenuClick = { scope.launch { drawerState.open() } }) },
-                floatingActionButton = {
-                    Column(
-                        horizontalAlignment = Alignment.End,
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier.padding(16.dp)
+            )
+        },
+        scrimColor = Color.Black.copy(alpha = 0.32f) // 스크림 색상 설정
+    ) {
+        Scaffold(
+            topBar = { TopBar(onMenuClick = { scope.launch { drawerState.open() } }) },
+            floatingActionButton = {
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    FloatingActionButton(
+                        onClick = { /* 글쓰기 로직 */ },
+                        containerColor = Color.Black,
+                        contentColor = Color.White,
+                        shape = CircleShape
                     ) {
-                        FloatingActionButton(
-                            onClick = { /* 글쓰기 로직 */ },
-                            containerColor = Color.Black,
-                            contentColor = Color.White,
-                            shape = CircleShape
-                        ) {
-                            Icon(imageVector = Icons.Outlined.Edit, contentDescription = "글쓰기")
-                        }
-                        FloatingActionButton(
-                            onClick = { /* 스티커 로직 */ },
-                            containerColor = Color.Black,
-                            contentColor = Color.White,
-                            shape = CircleShape
-                        ) {
-                            Icon(imageVector = Icons.Outlined.Face, contentDescription = "스티커")
-                        }
+                        Icon(imageVector = Icons.Outlined.Edit, contentDescription = "글쓰기")
+                    }
+                    FloatingActionButton(
+                        onClick = { /* 스티커 로직 */ },
+                        containerColor = Color.Black,
+                        contentColor = Color.White,
+                        shape = CircleShape
+                    ) {
+                        Icon(imageVector = Icons.Outlined.Face, contentDescription = "스티커")
                     }
                 }
-            ) { innerPadding ->
-                Column(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize()
-                ) {
-                    val memoModel = viewModel<MemoViewModel>()
-                    val chunkedItems = memoModel.memoList.chunked(2)
+            }
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            ) {
+                val memoModel = viewModel<MemoViewModel>()
+                val chunkedItems = memoModel.memoList.chunked(2)
 
-                    LazyColumn(
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        itemsIndexed(chunkedItems) { _, rowItems ->
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                for (item in rowItems) {
-                                    MemoItem(MemoContents = item, modifier = Modifier.weight(1f)) {
-                                        // onClick 핸들러
-                                    }
+                LazyColumn(
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    itemsIndexed(chunkedItems) { _, rowItems ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            for (item in rowItems) {
+                                MemoItem(MemoContents = item, modifier = Modifier.weight(1f)) {
+                                    // onClick 핸들러
                                 }
-                                if (rowItems.size < 2) {
-                                    for (i in rowItems.size until 2) {
-                                        Spacer(modifier = Modifier.weight(1f))
-                                    }
+                            }
+                            if (rowItems.size < 2) {
+                                for (i in rowItems.size until 2) {
+                                    Spacer(modifier = Modifier.weight(1f))
                                 }
                             }
                         }
