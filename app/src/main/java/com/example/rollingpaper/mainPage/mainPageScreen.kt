@@ -1,8 +1,10 @@
 package com.example.rollingpaper.mainPage
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,30 +15,36 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Face
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,62 +56,87 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.rollingpaper.Memo
 import com.example.rollingpaper.MemoViewModel
+import kotlinx.coroutines.launch
 import kotlin.random.Random
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainPageScreen() {
-    Scaffold(
-        topBar = { TopBar() },
-        floatingActionButton = {
-            Column(
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.padding(16.dp)
-            ) {
-                FloatingActionButton(
-                    onClick = { /* 글쓰기 로직 */ },
-                    containerColor = Color.Black,
-                    contentColor = Color.White,
-                    shape = CircleShape
-                ) {
-                    Icon(imageVector = Icons.Default.Edit, contentDescription = "글쓰기")
-                }
-                FloatingActionButton(
-                    onClick = { /* 스티커 로직 */ },
-                    containerColor = Color.Black,
-                    contentColor = Color.White,
-                    shape = CircleShape
-                ) {
-                    Icon(imageVector = Icons.Default.Face, contentDescription = "스티커")
-                }
-            }
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-        ) {
-            val memoModel = viewModel<MemoViewModel>()
-            val chunkedItems = memoModel.memoList.chunked(2)
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
 
-            LazyColumn(
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                itemsIndexed(chunkedItems) { _, rowItems ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    BoxWithConstraints {
+        val drawerWidth = maxWidth * 0.75f
+
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(drawerWidth)
+                        .background(Color.White)
+                        .align(Alignment.CenterEnd)
+                ) {
+                    DrawerContent()
+                }
+            },
+            scrimColor = Color.Transparent // 투명색 제거
+        ) {
+            Scaffold(
+                topBar = { TopBar(onMenuClick = { scope.launch { drawerState.open() } }) },
+                floatingActionButton = {
+                    Column(
+                        horizontalAlignment = Alignment.End,
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier.padding(16.dp)
                     ) {
-                        for (item in rowItems) {
-                            MemoItem(MemoContents = item, modifier = Modifier.weight(1f)) {
-                                // onClick 핸들러
-                            }
+                        FloatingActionButton(
+                            onClick = { /* 글쓰기 로직 */ },
+                            containerColor = Color.Black,
+                            contentColor = Color.White,
+                            shape = CircleShape
+                        ) {
+                            Icon(imageVector = Icons.Outlined.Edit, contentDescription = "글쓰기")
                         }
-                        if (rowItems.size < 2) {
-                            for (i in rowItems.size until 2) {
-                                Spacer(modifier = Modifier.weight(1f))
+                        FloatingActionButton(
+                            onClick = { /* 스티커 로직 */ },
+                            containerColor = Color.Black,
+                            contentColor = Color.White,
+                            shape = CircleShape
+                        ) {
+                            Icon(imageVector = Icons.Outlined.Face, contentDescription = "스티커")
+                        }
+                    }
+                }
+            ) { innerPadding ->
+                Column(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxSize()
+                ) {
+                    val memoModel = viewModel<MemoViewModel>()
+                    val chunkedItems = memoModel.memoList.chunked(2)
+
+                    LazyColumn(
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        itemsIndexed(chunkedItems) { _, rowItems ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                for (item in rowItems) {
+                                    MemoItem(MemoContents = item, modifier = Modifier.weight(1f)) {
+                                        // onClick 핸들러
+                                    }
+                                }
+                                if (rowItems.size < 2) {
+                                    for (i in rowItems.size until 2) {
+                                        Spacer(modifier = Modifier.weight(1f))
+                                    }
+                                }
                             }
                         }
                     }
@@ -115,7 +148,7 @@ fun MainPageScreen() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar() {
+fun TopBar(onMenuClick: () -> Unit) {
     TopAppBar(
         title = { Text("To. 미니", fontSize = 20.sp) },
         navigationIcon = {
@@ -127,7 +160,7 @@ fun TopBar() {
             }
         },
         actions = {
-            IconButton(onClick = { /* 메뉴 로직 */ }) {
+            IconButton(onClick = onMenuClick) {
                 Icon(
                     imageVector = Icons.Default.Menu,
                     contentDescription = "Menu"
@@ -140,6 +173,22 @@ fun TopBar() {
             actionIconContentColor = Color.Black
         )
     )
+}
+
+@Composable
+fun DrawerContent() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Text(text = "로그인하세요", modifier = Modifier.padding(16.dp))
+        Divider()
+        Text(text = "홈", fontSize = 24.sp, modifier = Modifier.padding(16.dp))
+        Text(text = "마이페이지", fontSize = 24.sp, modifier = Modifier.padding(16.dp))
+        Text(text = "Team5", fontSize = 24.sp, modifier = Modifier.padding(16.dp))
+        Text(text = "팀원 소개", fontSize = 24.sp, modifier = Modifier.padding(16.dp))
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
