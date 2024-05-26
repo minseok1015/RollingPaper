@@ -20,11 +20,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    homeScreen();
-
-
-                    //n브런치 테스트 합니다.
-
+                    MainScreen();
                 }
             }
         }

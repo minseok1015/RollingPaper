@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="stickerImages">
+        <item>@drawable/bono1</item> <item>@drawable/ku16</item>
+        <item>@drawable/ku</item> <item>@drawable/ku17</item>
+        <item>@drawable/ku2</item> <item>@drawable/ku18</item>
+        <item>@drawable/ku3</item> <item>@drawable/ku19</item>
+        <item>@drawable/ku4</item> <item>@drawable/ku20</item>
+        <item>@drawable/ku5</item> <item>@drawable/ku21</item>
+        <item>@drawable/ku6</item> <item>@drawable/ku22</item>
+        <item>@drawable/ku7</item> <item>@drawable/ku23</item>
+        <item>@drawable/ku8</item> <item>@drawable/ku24</item>
+        <item>@drawable/ku9</item> <item>@drawable/ku25</item>
+        <item>@drawable/ku10</item> <item>@drawable/ku26</item>
+        <item>@drawable/ku11</item> <item>@drawable/ku27</item>
+        <item>@drawable/ku12</item> <item>@drawable/ku28</item>
+        <item>@drawable/ku13</item> <item>@drawable/ku29</item>
+        <item>@drawable/ku14</item> <item>@drawable/ku30</item>
+
+        <item>@drawable/ku15</item> <item>@drawable/ku31</item>
+        <item>@drawable/ku32</item> <item>@drawable/ku33</item>
+        <item>@drawable/ku34</item> <item>@drawable/ku35</item>
+        <item>@drawable/ku36</item> <item>@drawable/ku37</item>
+        <item>@drawable/ku38</item> <item>@drawable/ku39</item>
+        <item>@drawable/ku40</item> <item>@drawable/ku41</item>
+        <item>@drawable/ku42</item> <item>@drawable/ku43</item>
+        <item>@drawable/ku44</item> <item>@drawable/ku45</item>
+        <item>@drawable/ku46</item> <item>@drawable/ku47</item>
+        <item>@drawable/ku48</item> <item>@drawable/ku49</item>
+        <item>@drawable/ku50</item> <item>@drawable/ku51</item>
+        <item>@drawable/ku52</item> <item>@drawable/ku53</item>
+        <item>@drawable/ku54</item> <item>@drawable/ku55</item>
+        <item>@drawable/ku56</item> <item>@drawable/ku57</item>
+        <item>@drawable/ku58</item> <item>@drawable/ku59</item>
+    </array>
+</resources>
