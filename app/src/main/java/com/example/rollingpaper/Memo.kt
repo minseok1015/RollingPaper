@@ -1,3 +1,5 @@
 package com.example.rollingpaper
 
-data class Memo(var memoId:Int,var content:String, var name: String, var font:String,var fontSize:String,var fontColor:String,var memoColor:String, var like:Int,var pageId:Int)
+import androidx.compose.ui.graphics.Color
+
+data class Memo(var memoId:Int,var content:String, var name: String, var font:String,var fontSize:Int,var fontColor:Color,var memoColor:Color, var like:Int,var pageId:Int)

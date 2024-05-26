@@ -25,6 +25,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,9 +55,7 @@ fun MainPageScreen() {
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     for (item in rowItems) {
-                        MemoItem(MemoContents = item, modifier = Modifier.weight(1f)) {
-                            // onClick 핸들러
-                        }
+                        MemoItem(MemoContents = item, modifier = Modifier.weight(1f))
                     }
                     if (rowItems.size < 2) {
                         for (i in rowItems.size until 2) {
@@ -68,8 +70,9 @@ fun MainPageScreen() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MemoItem(MemoContents: Memo, modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun MemoItem(MemoContents: Memo, modifier: Modifier = Modifier) {
     val rotationAngle = Random.nextFloat() * 10 - 5 // -5도에서 5도 사이의 랜덤 각도
+    var likes by remember { mutableStateOf(MemoContents.like) }
 
     Box(modifier = modifier.padding(8.dp)) {
         Box(
@@ -80,7 +83,8 @@ fun MemoItem(MemoContents: Memo, modifier: Modifier = Modifier, onClick: () -> U
         ) {
             Card(
                 modifier = Modifier.fillMaxSize(),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(containerColor = MemoContents.memoColor), // memoColor를 배경색으로 지정
             ) {
                 Column(
                     modifier = Modifier
@@ -89,8 +93,8 @@ fun MemoItem(MemoContents: Memo, modifier: Modifier = Modifier, onClick: () -> U
                         .fillMaxHeight(),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = MemoContents.content)
-                    Text(text = MemoContents.name)
+                    Text(text = MemoContents.content, color = MemoContents.fontColor)
+                    Text(text = MemoContents.name, color = MemoContents.fontColor)
                 }
             }
             BadgedBox(
@@ -99,7 +103,7 @@ fun MemoItem(MemoContents: Memo, modifier: Modifier = Modifier, onClick: () -> U
                     .offset(x = (-8).dp, y = 8.dp),
                 badge = {
                     Badge {
-                        Text(text = "${MemoContents.like}")
+                        Text(text = "$likes")
                     }
                 }
             ) {
@@ -107,7 +111,10 @@ fun MemoItem(MemoContents: Memo, modifier: Modifier = Modifier, onClick: () -> U
                     Icons.Default.Favorite,
                     contentDescription = null,
                     tint = Color.Red,
-                    modifier = Modifier.clickable { onClick() }
+                    modifier = Modifier.clickable{
+                        likes++
+                        //DB에 좋아요 개수 증가하도록 요청하는 로직
+                    }
                 )
             }
         }
