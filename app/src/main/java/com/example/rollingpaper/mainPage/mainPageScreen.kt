@@ -49,18 +49,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.rollingpaper.Memo
 import com.example.rollingpaper.MemoViewModel
+import com.example.rollingpaper.Routes
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainPageScreen() {
+fun MainPageScreen(navController: NavController) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -87,7 +88,7 @@ fun MainPageScreen() {
                     modifier = Modifier.padding(16.dp)
                 ) {
                     FloatingActionButton(
-                        onClick = { /* 글쓰기 로직 */ },
+                        onClick = { navController.navigate(Routes.Memo.route) },
                         containerColor = Color.Black,
                         contentColor = Color.White,
                         shape = CircleShape
@@ -235,8 +236,3 @@ fun MemoItem(MemoContents: Memo, modifier: Modifier = Modifier, onClick: () -> U
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun MainPageScreenPreview() {
-    MainPageScreen()
-}
