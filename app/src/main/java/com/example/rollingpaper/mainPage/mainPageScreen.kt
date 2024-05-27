@@ -58,6 +58,7 @@ import com.example.rollingpaper.Memo
 import com.example.rollingpaper.MemoViewModel
 import com.example.rollingpaper.Routes
 import com.example.rollingpaper.StickerViewModel
+import com.example.rollingpaper.component.Colors
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -217,8 +218,8 @@ fun MemoItem(MemoContents: Memo, modifier: Modifier = Modifier, onClick: () -> U
                         .fillMaxHeight(),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = MemoContents.content, color = MemoContents.fontColor)
-                    Text(text = MemoContents.name, color = MemoContents.fontColor)
+                    Text(text = MemoContents.content, color = Colors.getColorByIndex(MemoContents.fontColor))
+                    Text(text = MemoContents.name, color =  Colors.getColorByIndex(MemoContents.fontColor))
                 }
             }
             BadgedBox(
