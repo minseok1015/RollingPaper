@@ -14,9 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ButtonDefaults.outlinedButtonColors
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
@@ -29,13 +26,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.rollingpaper.Routes
 
 @Composable
-fun makePage() {
+fun makePage(navController: NavController) {
     var selectedTheme by remember { mutableStateOf(1) }
     var titleText by remember { mutableStateOf("") }
 
@@ -71,7 +69,7 @@ fun makePage() {
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            OutlinedButton(onClick = { /* TODO: 뒤로가기 동작 추가 */ }) {
+            OutlinedButton(onClick = { navController.navigate(Routes.Home.route) }) {
                 Text("뒤로가기", fontWeight = FontWeight.Bold)
             }
             OutlinedButton(onClick = { /* TODO: 페이지 생성 동작 추가 */ }) {
