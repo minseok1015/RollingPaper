@@ -20,10 +20,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.rollingpaper.KakaoAuthViewModel
 
 
 @Composable
-fun homeScreen_no(navController: NavController) {
+fun homeScreen_no( viewModel : KakaoAuthViewModel) {
+//    navController: NavController,
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -45,8 +47,9 @@ fun homeScreen_no(navController: NavController) {
             )
 
             Button(
-                onClick = { navController.navigate("mainPageScreen")  },
-                colors = ButtonDefaults.buttonColors( Color(0xFF3C352E)),
+                onClick = { },
+//                navController.navigate("mainPageScreen")
+                        colors = ButtonDefaults.buttonColors( Color(0xFF3C352E)),
                 modifier = Modifier
                     .fillMaxWidth(0.6f)
                     .padding(vertical = 8.dp),
@@ -56,7 +59,7 @@ fun homeScreen_no(navController: NavController) {
             }
 
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { viewModel.handleKakaoLogin() },
                 colors = ButtonDefaults.buttonColors(Color(0xFF3C352E)),
                 modifier = Modifier
                     .fillMaxWidth(0.6f)
@@ -69,4 +72,4 @@ fun homeScreen_no(navController: NavController) {
             }
         }
     }
-}
+
