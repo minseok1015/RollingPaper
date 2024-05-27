@@ -53,15 +53,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.rollingpaper.MainScreen
 import com.example.rollingpaper.Memo
 import com.example.rollingpaper.MemoViewModel
 import com.example.rollingpaper.Routes
+import com.example.rollingpaper.StickerViewModel
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainPageScreen(navController: NavController) {
+fun MainPageScreen(navController: NavController,stickerViewModel: StickerViewModel = viewModel()) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -96,7 +98,10 @@ fun MainPageScreen(navController: NavController) {
                         Icon(imageVector = Icons.Outlined.Edit, contentDescription = "글쓰기")
                     }
                     FloatingActionButton(
-                        onClick = { /* 스티커 로직 */ },
+                        onClick = {
+                            stickerViewModel.changeShow()
+                            stickerViewModel.changeEmoticonShow()
+                        },
                         containerColor = Color.Black,
                         contentColor = Color.White,
                         shape = CircleShape
@@ -139,6 +144,7 @@ fun MainPageScreen(navController: NavController) {
             }
         }
     }
+    MainScreen()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

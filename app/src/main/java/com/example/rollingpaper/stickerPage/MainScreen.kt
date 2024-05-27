@@ -43,21 +43,6 @@ fun MainScreen(stickerViewModel: StickerViewModel = viewModel()) {
     val context = LocalContext.current
 
     Box {
-        FloatingActionButton(
-            modifier = Modifier
-                .size(100.dp)
-                .padding(16.dp)
-                .align(Alignment.BottomEnd),
-            onClick = {
-                stickerViewModel.changeShow()
-                stickerViewModel.changeEmoticonShow()
-            }) {
-            Icon(
-                painterResource(id = R.drawable.outline_emoji_emotions_24),
-                contentDescription = null,
-                modifier = Modifier.size(50.dp)
-            )
-        }
 
         if (!stickerViewModel.selectedArray.isEmpty()) {
 
