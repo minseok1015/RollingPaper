@@ -8,7 +8,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.example.rollingpaper.mainPage.MainPageScreen
+import com.example.rollingpaper.homePage.homeScreen
+import com.example.rollingpaper.makePage.makePage
 import com.example.rollingpaper.ui.theme.RollingPaperTheme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +26,7 @@ class MainActivity : ComponentActivity() {
                     MainPageScreen();
 
 
-                    //n브런치 테스트 합니다.
+                    //마지막 테스트
 
                 }
             }
