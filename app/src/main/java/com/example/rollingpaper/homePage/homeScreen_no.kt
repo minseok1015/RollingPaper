@@ -20,10 +20,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.rollingpaper.KakaoAuthViewModel
 
 
 @Composable
-fun homeScreen(navController: NavController) {
+fun homeScreen_no( viewModel : KakaoAuthViewModel) {
+//    navController: NavController,
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -45,37 +47,29 @@ fun homeScreen(navController: NavController) {
             )
 
             Button(
-                onClick = { navController.navigate("mainPageScreen")  },
-                colors = ButtonDefaults.buttonColors( Color(0xFF3C352E)),
+                onClick = { },
+//                navController.navigate("mainPageScreen")
+                        colors = ButtonDefaults.buttonColors( Color(0xFF3C352E)),
                 modifier = Modifier
                     .fillMaxWidth(0.6f)
                     .padding(vertical = 8.dp),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text(text = "시작하기", color = Color.White, fontSize = 18.sp)
+                Text(text = "입장하기", color = Color.White, fontSize = 18.sp)
             }
 
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { viewModel.handleKakaoLogin() },
                 colors = ButtonDefaults.buttonColors(Color(0xFF3C352E)),
                 modifier = Modifier
                     .fillMaxWidth(0.6f)
                     .padding(vertical = 8.dp),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text(text = "페이지 생성", color = Color.White, fontSize = 18.sp)
+                Text(text = "로그인", color = Color.White, fontSize = 18.sp)
             }
 
-            Button(
-                onClick = { /*TODO*/ },
-                colors = ButtonDefaults.buttonColors(Color(0xFF3C352E)),
-                modifier = Modifier
-                    .fillMaxWidth(0.6f)
-                    .padding(vertical = 8.dp),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Text(text = "로그아웃", color = Color.White, fontSize = 18.sp)
             }
         }
     }
-}
+
