@@ -53,14 +53,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.rollingpaper.MainScreen
 import com.example.rollingpaper.Memo
 import com.example.rollingpaper.MemoViewModel
+import com.example.rollingpaper.StickerViewModel
+import com.kakao.sdk.friend.m.s
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainPageScreen() {
+fun MainPageScreen(stickerViewModel: StickerViewModel = viewModel()) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -95,7 +98,10 @@ fun MainPageScreen() {
                         Icon(imageVector = Icons.Outlined.Edit, contentDescription = "글쓰기")
                     }
                     FloatingActionButton(
-                        onClick = { /* 스티커 로직 */ },
+                        onClick = {
+                            stickerViewModel.changeShow()
+                            stickerViewModel.changeEmoticonShow()
+                        },
                         containerColor = Color.Black,
                         contentColor = Color.White,
                         shape = CircleShape
@@ -138,6 +144,7 @@ fun MainPageScreen() {
             }
         }
     }
+    MainScreen()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -238,5 +245,5 @@ fun MemoItem(MemoContents: Memo, modifier: Modifier = Modifier, onClick: () -> U
 @Preview(showBackground = true)
 @Composable
 fun MainPageScreenPreview() {
-    MainPageScreen()
+//    MainPageScreen()
 }

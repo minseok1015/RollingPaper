@@ -50,22 +50,12 @@ class MainActivity : ComponentActivity() {
                 ) {
                     // NavController 초기화
                     val navController = rememberNavController()
-
-//                    // NavHost에 NavController 연결
-//                    NavHost(navController, startDestination = "homeScreen") {
-//                        composable("homeScreen") {
-//                            homeScreen_no(navController, viewModel = kakaoAuthViewModel)
-//                        }
-//                        composable("makeMemoScreen") {
-//                            makeMemoScreen()
-//                        }
-                    homeScreen_no(viewModel = kakaoAuthViewModel)
-//
-                        // 다른 destination 추가
-                    }
+                    MainPageScreen()
+                    // 다른 destination 추가
                 }
             }
         }
     }
+}
 
 
