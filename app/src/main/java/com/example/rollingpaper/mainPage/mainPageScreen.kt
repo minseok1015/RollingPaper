@@ -40,6 +40,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -73,6 +74,10 @@ fun MainPageScreen(navController: NavController,memoModel:MemoViewModel, sticker
     val scope = rememberCoroutineScope()
     val memoList by memoModel.memoList.collectAsState(initial = emptyList())
 
+    LaunchedEffect(Unit) {
+        memoModel.getAllMemos()
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -88,7 +93,8 @@ fun MainPageScreen(navController: NavController,memoModel:MemoViewModel, sticker
         scrimColor = Color.Black.copy(alpha = 0.32f) // 스크림 색상 설정
     ) {
         Scaffold(
-            topBar = { TopBar(onMenuClick = { scope.launch { drawerState.open() } }) },
+            topBar = { TopBar(onMenuClick = { scope.launch { drawerState.open() }
+            }) },
             floatingActionButton = {
                 Column(
                     horizontalAlignment = Alignment.End,
