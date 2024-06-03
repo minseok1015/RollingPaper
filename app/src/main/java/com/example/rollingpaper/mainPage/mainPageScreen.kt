@@ -95,17 +95,14 @@ import kotlinx.coroutines.flow.map
 import com.example.rollingpaper.component.Colors
 import com.example.rollingpaper.component.FontColors
 import com.example.rollingpaper.component.Fonts
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainPageScreen(navController: NavController, stickerViewModel: StickerViewModel = viewModel()) {
+fun MainPageScreen(navController: NavController,memoModel:MemoViewModel, stickerViewModel: StickerViewModel = viewModel()) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val application = LocalContext.current.applicationContext as Application
 
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
