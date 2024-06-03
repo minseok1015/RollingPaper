@@ -119,6 +119,11 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
         else -> Color.White
     }
 
+    val scrollOffset by remember { derivedStateOf { lazyListState.firstVisibleItemScrollOffset } }
+    LaunchedEffect(Unit) {
+        memoModel.getAllMemos()
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
