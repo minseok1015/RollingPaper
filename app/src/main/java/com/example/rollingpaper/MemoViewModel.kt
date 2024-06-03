@@ -3,6 +3,18 @@ package com.example.rollingpaper
 import android.app.Application
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+
+
+class MemoViewModelFactory(private val repository: Repository): ViewModelProvider.Factory{
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(MemoViewModel::class.java)) {
+            return MemoViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
 
 class MemoViewModel(private val application: Application): AndroidViewModel(application) {
     var memoList= mutableStateListOf<Memo>()
@@ -24,5 +36,3 @@ class MemoViewModel(private val application: Application): AndroidViewModel(appl
 
 }
 
-
-// 정재우 푸쉬dd

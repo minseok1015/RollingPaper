@@ -1,10 +1,11 @@
+
 import java.io.FileInputStream
 import java.util.Properties
-import kotlin.script.experimental.api.ScriptCompilationConfiguration.Default.properties
 
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.gms.google-services")
 }
 
 
@@ -97,6 +98,7 @@ dependencies {
     implementation("androidx.compose.foundation:foundation-layout:1.7.0-beta01")
     implementation("androidx.compose.material3:material3-android:1.2.1")
     implementation("com.google.chromeos:chromeos-lowlatencystylus:1.0.1")
+    implementation("com.google.firebase:firebase-database:21.0.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
