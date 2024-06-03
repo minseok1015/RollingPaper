@@ -89,6 +89,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import com.example.rollingpaper.component.Colors
+import com.example.rollingpaper.component.FontColors
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import kotlin.random.Random
