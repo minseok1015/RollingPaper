@@ -1,6 +1,5 @@
 package com.example.rollingpaper.mainPage
 
-import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -51,7 +50,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -59,27 +57,20 @@ import androidx.navigation.NavController
 import com.example.rollingpaper.MainScreen
 import com.example.rollingpaper.Memo
 import com.example.rollingpaper.MemoViewModel
-import com.example.rollingpaper.MemoViewModelFactory
-import com.example.rollingpaper.Repository
 import com.example.rollingpaper.Routes
 import com.example.rollingpaper.StickerViewModel
 import com.example.rollingpaper.component.Colors
 import com.example.rollingpaper.component.FontColors
 import com.example.rollingpaper.component.Fonts
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainPageScreen(navController: NavController,stickerViewModel: StickerViewModel = viewModel()) {
+fun MainPageScreen(navController: NavController,memoModel:MemoViewModel, stickerViewModel: StickerViewModel = viewModel()) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val application = LocalContext.current.applicationContext as Application
 
     val scope = rememberCoroutineScope()
-    val table= Firebase.database.getReference("Pages/memos")
-    val memoModel: MemoViewModel = viewModel(factory = MemoViewModelFactory(application, Repository(table)))
     val memoList by memoModel.memoList.collectAsState(initial = emptyList())
 
     ModalNavigationDrawer(
