@@ -1,5 +1,6 @@
 package com.example.rollingpaper.mainPage
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -22,6 +24,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Face
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
@@ -36,10 +39,12 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.rollingpaper.KakaoAuthViewModel
 import com.example.rollingpaper.MainScreen
 import com.example.rollingpaper.Memo
 import com.example.rollingpaper.MemoViewModel
@@ -63,9 +69,10 @@ import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainPageScreen(navController: NavController,stickerViewModel: StickerViewModel = viewModel()) {
+fun MainPageScreen(navController: NavController, stickerViewModel: StickerViewModel = viewModel()) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val kakaoAuthViewModel: KakaoAuthViewModel = viewModel()
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -82,7 +89,16 @@ fun MainPageScreen(navController: NavController,stickerViewModel: StickerViewMod
         scrimColor = Color.Black.copy(alpha = 0.32f) // 스크림 색상 설정
     ) {
         Scaffold(
-            topBar = { TopBar(onMenuClick = { scope.launch { drawerState.open() } }) },
+            topBar = { TopBar(
+                onMenuClick = { scope.launch { drawerState.open() } },
+                onShareClick = {
+                    kakaoAuthViewModel.handleKakaoLogin { user ->
+                        user?.let {
+                            kakaoAuthViewModel.fetchFriends()
+                        }
+                    }
+                }
+            ) },
             floatingActionButton = {
                 Column(
                     horizontalAlignment = Alignment.End,
@@ -144,16 +160,25 @@ fun MainPageScreen(navController: NavController,stickerViewModel: StickerViewMod
             }
         }
     }
+
+    val friends by kakaoAuthViewModel.friends.collectAsState()
+    if (friends.isNotEmpty()) {
+        FriendSelectionDialog(friends) { selectedFriends ->
+            kakaoAuthViewModel.sendMessage(selectedFriends, "안녕하세요! 이 메시지는 테스트입니다.")
+            Toast.makeText(navController.context, "메시지를 보냈습니다.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     MainScreen()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(onMenuClick: () -> Unit) {
+fun TopBar(onMenuClick: () -> Unit, onShareClick: () -> Unit) {
     TopAppBar(
         title = { Text("To. 미니", fontSize = 20.sp) },
         navigationIcon = {
-            IconButton(onClick = { /* 공유하기 로직 */ }) {
+            IconButton(onClick = onShareClick) {
                 Icon(
                     imageVector = Icons.Default.Favorite,
                     contentDescription = "Share"
@@ -242,3 +267,48 @@ fun MemoItem(MemoContents: Memo, modifier: Modifier = Modifier, onClick: () -> U
     }
 }
 
+@Composable
+fun FriendSelectionDialog(friends: List<String>, onConfirm: (List<String>) -> Unit) {
+    var selectedFriends by remember { mutableStateOf(emptyList<String>()) }
+    val onFriendClick = { friend: String ->
+        selectedFriends = if (selectedFriends.contains(friend)) {
+            selectedFriends - friend
+        } else {
+            selectedFriends + friend
+        }
+    }
+
+    AlertDialog(
+        onDismissRequest = { /* Dialog 닫기 로직 */ },
+        title = { Text(text = "친구 선택") },
+        text = {
+            LazyColumn {
+                items(friends) { friend ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onFriendClick(friend) }
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = friend)
+                        Spacer(modifier = Modifier.weight(1f))
+                        if (selectedFriends.contains(friend)) {
+                            Icon(imageVector = Icons.Default.Favorite, contentDescription = null)
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onConfirm(selectedFriends) }) {
+                Text(text = "확인")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { /* Dialog 닫기 로직 */ }) {
+                Text(text = "취소")
+            }
+        }
+    )
+}
