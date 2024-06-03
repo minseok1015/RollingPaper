@@ -89,6 +89,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import com.example.rollingpaper.component.Colors
 import com.example.rollingpaper.component.FontColors
+import com.example.rollingpaper.component.Fonts
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -323,9 +324,16 @@ fun MainPageScreen(navController: NavController, stickerViewModel: StickerViewMo
                             .fillMaxHeight(),
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(text = MemoContents.content, color = MemoContents.fontColor)
-                        Text(text = MemoContents.name, color = MemoContents.fontColor)
+                        Text(text = MemoContents.content,
+                        color = FontColors.getFontColorByIndex(MemoContents.fontColor),
+                        fontFamily = Fonts.getFontByIndex(MemoContents.font)
+                    )
+                    Text(text = MemoContents.name,
+                        color =  FontColors.getFontColorByIndex(MemoContents.fontColor),
+                        fontFamily = Fonts.getFontByIndex(MemoContents.font)
+                    )
                     }
+                    
                 }
                 BadgedBox(
                     modifier = Modifier
