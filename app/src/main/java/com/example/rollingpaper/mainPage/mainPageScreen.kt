@@ -1,5 +1,6 @@
 package com.example.rollingpaper.mainPage
 
+import android.app.Application
 import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Image
@@ -54,6 +55,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -73,6 +75,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
@@ -82,6 +85,8 @@ import com.example.rollingpaper.MainScreen
 import com.example.rollingpaper.Memo
 import com.example.rollingpaper.MemoViewModel
 import com.example.rollingpaper.R
+import com.example.rollingpaper.MemoViewModelFactory
+import com.example.rollingpaper.Repository
 import com.example.rollingpaper.Routes
 import com.example.rollingpaper.StickerViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -90,6 +95,8 @@ import kotlinx.coroutines.flow.map
 import com.example.rollingpaper.component.Colors
 import com.example.rollingpaper.component.FontColors
 import com.example.rollingpaper.component.Fonts
+import com.google.firebase.Firebase
+import com.google.firebase.database.database
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -98,8 +105,13 @@ import kotlin.random.Random
 @Composable
 fun MainPageScreen(navController: NavController, stickerViewModel: StickerViewModel = viewModel()) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val application = LocalContext.current.applicationContext as Application
+
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
+    val table= Firebase.database.getReference("Pages/memos")
+    val memoModel: MemoViewModel = viewModel(factory = MemoViewModelFactory(application, Repository(table)))
+    val memoList by memoModel.memoList.collectAsState(initial = emptyList())
 
     val scrollOffset by remember { derivedStateOf { lazyListState.firstVisibleItemScrollOffset } }
     ModalNavigationDrawer(
@@ -153,8 +165,6 @@ fun MainPageScreen(navController: NavController, stickerViewModel: StickerViewMo
                     .padding(innerPadding)
                     .fillMaxSize()
             ) {
-                val memoModel = viewModel<MemoViewModel>()
-                val chunkedItems = memoModel.memoList.chunked(2)
 
 
                 val listState = rememberLazyListState()
@@ -167,7 +177,9 @@ fun MainPageScreen(navController: NavController, stickerViewModel: StickerViewMo
                 var imageOffset by remember { mutableStateOf(Offset.Zero) }
 //                Text("dp : $dpjb")
                 Box(
+                
                 ) {
+                    val chunkedItems = memoList.chunked(2)
 
                     LazyColumn(
                         state = listState,
