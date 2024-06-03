@@ -29,5 +29,13 @@ class MemoViewModel(private val application: Application,private val repository:
         }
     }
 
+    fun getAllMemos(){
+        viewModelScope.launch {
+            repository.getAllMemos().collect{
+                _memoList.value=it
+            }
+        }
+    }
+
 }
 

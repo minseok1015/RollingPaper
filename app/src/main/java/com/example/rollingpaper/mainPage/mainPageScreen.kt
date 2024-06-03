@@ -111,6 +111,10 @@ fun MainPageScreen(navController: NavController,memoModel:MemoViewModel, sticker
     val memoList by memoModel.memoList.collectAsState(initial = emptyList())
 
     val scrollOffset by remember { derivedStateOf { lazyListState.firstVisibleItemScrollOffset } }
+    LaunchedEffect(Unit) {
+        memoModel.getAllMemos()
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -126,7 +130,8 @@ fun MainPageScreen(navController: NavController,memoModel:MemoViewModel, sticker
         scrimColor = Color.Black.copy(alpha = 0.32f) // 스크림 색상 설정
     ) {
         Scaffold(
-            topBar = { TopBar(onMenuClick = { scope.launch { drawerState.open() } }) },
+            topBar = { TopBar(onMenuClick = { scope.launch { drawerState.open() }
+            }) },
             floatingActionButton = {
                 Column(
                     horizontalAlignment = Alignment.End,
