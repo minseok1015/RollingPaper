@@ -96,8 +96,6 @@ import kotlinx.coroutines.flow.map
 import com.example.rollingpaper.component.Colors
 import com.example.rollingpaper.component.FontColors
 import com.example.rollingpaper.component.Fonts
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -106,7 +104,6 @@ import kotlin.random.Random
 @Composable
 fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: NavController, stickerViewModel: StickerViewModel = viewModel(), kakaoAuthViewModel: KakaoAuthViewModel) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val application = LocalContext.current.applicationContext as Application
 
     val scope = rememberCoroutineScope()
     val context = KakaoAuthViewModel.context

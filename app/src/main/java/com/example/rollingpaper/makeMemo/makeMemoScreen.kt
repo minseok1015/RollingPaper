@@ -23,8 +23,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.rollingpaper.KakaoAuthViewModel
 import com.example.rollingpaper.MainActivity
+import com.example.rollingpaper.Memo
+import com.example.rollingpaper.MemoViewModel
 import com.example.rollingpaper.R
-
 @Composable
 fun makeMemoScreen(navController: NavController,kakaoAuthViewModel: KakaoAuthViewModel) {
 
@@ -230,6 +231,7 @@ fun makeMemoScreen(navController: NavController,kakaoAuthViewModel: KakaoAuthVie
             }
         }
 
+        val memo = Memo(1,"데이터베이스 삽입테스트","민석",14,1,2,14,14,1)
         NavigationBar(
             containerColor = Color.LightGray,
             contentColor = Color.Black,

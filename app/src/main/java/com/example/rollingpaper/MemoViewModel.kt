@@ -25,7 +25,7 @@ class MemoViewModel(private val application: Application,private val repository:
     val memoList = _memoList.asStateFlow()
     fun insertMemo(memo: Memo){
         viewModelScope.launch {
-            repository.insertItem(memo)
+            repository.insertMemo(memo)
         }
     }
 
