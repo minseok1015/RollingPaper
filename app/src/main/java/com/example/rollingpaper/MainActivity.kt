@@ -50,6 +50,7 @@ class MainActivity : ComponentActivity() {
 
                     val keyHash = Utility.getKeyHash(this)
                     Log.d("Hash", keyHash)
+                    kakaoAuthViewModel.checkLoginStatus()
                     val navcontroller= rememberNavController()
                     Graph(navcontroller)
 

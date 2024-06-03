@@ -30,19 +30,23 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
         checkLoginStatus()
     }
 
-    private fun checkLoginStatus() {
+    fun checkLoginStatus() {
         UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
             if (error != null) {
                 _isLoggedIn.value = false
                 Log.e(TAG, "로그인 상태 확인 실패", error)
             } else if (tokenInfo != null) {
                 _isLoggedIn.value = true
-                Log.i(TAG, "로그인 상태 확인 성공")
+                Log.i(TAG, "로그인 상태 확인 성공"+tokenInfo)
             }
         }
     }
 
     fun logout() {
+//        if(!isLoggedIn){
+//            Log.i(TAG, "이미 로그아웃 상태입니다.")
+//            return
+//        }
         UserApiClient.instance.logout { error ->
             if (error != null) {
                 Log.e(TAG, "로그아웃 실패. SDK에서 토큰 삭제됨", error)

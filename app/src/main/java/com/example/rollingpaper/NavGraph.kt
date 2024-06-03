@@ -37,7 +37,7 @@ fun Graph(navController: NavHostController,kakaoAuthViewModel: KakaoAuthViewMode
     NavHost(navController = navController, startDestination = Routes.Home.route){
         composable(route = Routes.Home.route) {
             if (isLoggedIn) {
-                homeScreen(navController)
+                homeScreen(navController, kakaoAuthViewModel)
             } else {
                 homeScreen_no(viewModel = kakaoAuthViewModel, navController=navController)
             }

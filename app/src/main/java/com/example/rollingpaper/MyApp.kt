@@ -11,7 +11,7 @@ import com.example.rollingpaper.homePage.homeScreen
 fun MyApp() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "homeScreen") {
-        composable("homeScreen") { homeScreen(navController) }
+//        composable("homeScreen") { homeScreen(navController, KakaoAuthViewModel) }
 //        composable("mainPageScreen") { mainPageScreen() }
         // Add other composable destinations here
     }

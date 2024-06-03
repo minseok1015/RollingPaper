@@ -14,19 +14,24 @@
     import androidx.compose.material3.ButtonDefaults
     import androidx.compose.material3.Text
     import androidx.compose.runtime.Composable
+    import androidx.compose.runtime.getValue
+    import androidx.compose.runtime.livedata.observeAsState
     import androidx.compose.ui.Alignment
     import androidx.compose.ui.Modifier
     import androidx.compose.ui.graphics.Color
     import androidx.compose.ui.text.font.FontWeight
     import androidx.compose.ui.unit.dp
     import androidx.compose.ui.unit.sp
+    import androidx.lifecycle.viewmodel.compose.viewModel
     import androidx.navigation.NavController
+    import com.example.rollingpaper.KakaoAuthViewModel
     import com.example.rollingpaper.Routes
     import com.kakao.sdk.user.UserApiClient
 
 
     @Composable
-    fun homeScreen(navController: NavController) {
+    fun homeScreen(navController: NavController, viewModel: KakaoAuthViewModel) {
+        val isLoggedIn by viewModel.isLoggedIn.observeAsState(initial = false)
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -72,15 +77,7 @@
 
                 Button(
                     onClick = {// 로그아웃
-                        UserApiClient.instance.logout { error ->
-                            if (error != null) {
-    //                            var TAG = null
-                                Log.e(TAG, "로그아웃 실패. SDK에서 토큰 삭제됨", error)
-                            }
-                            else {
-                                Log.i(TAG, "로그아웃 성공. SDK에서 토큰 삭제됨")
-                            }
-                        }
+                       viewModel.logout()
                          },
                     colors = ButtonDefaults.buttonColors(Color(0xFF3C352E)),
                     modifier = Modifier

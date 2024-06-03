@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,7 +23,7 @@ import com.example.rollingpaper.R
 import kotlin.math.abs
 
 @Composable
-fun makeMemoScreen(navController : NavController) {
+fun makeMemoScreen(navController: NavController) {
     var text by remember { mutableStateOf("") }
     var anonymous by remember { mutableStateOf(false) }
     var showFontSizeDialog by remember { mutableStateOf(false) }
@@ -31,6 +32,7 @@ fun makeMemoScreen(navController : NavController) {
     var fontSize by remember { mutableStateOf(16.sp) } // 기본 글씨 크기
     var textAlign by remember { mutableStateOf(TextAlign.Start) }
     var textColor by remember { mutableStateOf(Color.Black) }
+    var author by remember { mutableStateOf("") }
 
     val fontFamilies = listOf("굴림체", "궁서체", "바탕체", "고딕체")
     var selectedFont by remember { mutableStateOf(fontFamilies[0]) }
@@ -59,7 +61,7 @@ fun makeMemoScreen(navController : NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5EED3))
+//            .background(Color(0xFFF5EED3))
             .padding(16.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -70,16 +72,39 @@ fun makeMemoScreen(navController : NavController) {
             TextField(
                 value = text,
                 onValueChange = { text = it },
-                placeholder = { Text(text = "작성할 내용을 입력해 주세요") },
+                placeholder = {
+                    Text(
+                        text = "작성할 내용을 입력해 주세요",
+                        style = androidx.compose.ui.text.TextStyle(
+                            fontSize = fontSize,
+                            textAlign = textAlign,
+                            color = textColor,
+                            fontFamily = when (selectedFont) {
+                                "굴림체" -> FontFamily.Default
+                                "궁서체" -> FontFamily.Serif
+                                "바탕체" -> FontFamily.SansSerif
+                                "고딕체" -> FontFamily.Monospace
+                                else -> FontFamily.Default
+                            }
+                        )
+                    )
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
-                    .background(Color.White, shape = RoundedCornerShape(8.dp))
+                    .background(color = Color(0xFFFFFFFF), shape = RoundedCornerShape(8.dp))
                     .padding(8.dp),
                 textStyle = androidx.compose.ui.text.TextStyle(
                     fontSize = fontSize,
                     textAlign = textAlign,
-                    color = textColor
+                    color = textColor,
+                    fontFamily = when (selectedFont) {
+                        "굴림체" -> FontFamily.Default
+                        "궁서체" -> FontFamily.Serif
+                        "바탕체" -> FontFamily.SansSerif
+                        "고딕체" -> FontFamily.Monospace
+                        else -> FontFamily.Default
+                    }
                 )
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -101,24 +126,29 @@ fun makeMemoScreen(navController : NavController) {
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically ,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                if (!anonymous) {
+            if (!anonymous) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
                     Text(
-                        text = "From. ________________",
-                        modifier = Modifier.padding(bottom = 16.dp),
-
+                        text = "From. ",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
+                    TextField(
+                        value = author,
+                        onValueChange = { author = it },
+                        placeholder = { Text(text = "작성자") },
+                        modifier = Modifier
+                            .background(Color.White, shape = RoundedCornerShape(8.dp))
+                            .padding(8.dp)
+                    )
                 }
             }
-
+            Spacer(modifier = Modifier.height(16.dp))
             Row(
-
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
@@ -160,7 +190,6 @@ fun makeMemoScreen(navController : NavController) {
         }
     }
 }
-
 
 @Composable
 fun FontSizeDialog(fontSize: TextUnit, onDismiss: () -> Unit, onConfirm: (TextUnit) -> Unit) {
@@ -272,7 +301,7 @@ fun ColorPicker(
         // Saturation Slider
         Text("Saturation", modifier = Modifier.padding(vertical = 8.dp))
         Slider(
-            value = saturation,
+            value =  saturation,
             onValueChange = { newSaturation ->
                 saturation = newSaturation
                 onColorChange(Color.hsl(hue, saturation, lightness))
@@ -333,3 +362,4 @@ fun Color.toHsl(): HslColor {
 }
 
 data class HslColor(val hue: Float, val saturation: Float, val lightness: Float)
+
