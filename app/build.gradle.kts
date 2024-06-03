@@ -97,6 +97,7 @@ dependencies {
     implementation("androidx.compose.foundation:foundation-layout:1.7.0-beta01")
     implementation("androidx.compose.material3:material3-android:1.2.1")
     implementation("com.google.chromeos:chromeos-lowlatencystylus:1.0.1")
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.7")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

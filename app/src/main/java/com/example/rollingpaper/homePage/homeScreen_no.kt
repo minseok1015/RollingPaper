@@ -17,15 +17,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import com.example.rollingpaper.KakaoAuthViewModel
 
-
 @Composable
-fun homeScreen_no( viewModel : KakaoAuthViewModel) {
-//    navController: NavController,
+fun homeScreen_no(navController: NavController, viewModel: KakaoAuthViewModel) {
+    val isLoggedIn by viewModel.isLoggedIn.observeAsState(initial = false)
+    LaunchedEffect(isLoggedIn) {
+        if (isLoggedIn) {
+            navController.navigate("Home") {
+                popUpTo("Home") { inclusive = true }
+            }
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -47,9 +57,8 @@ fun homeScreen_no( viewModel : KakaoAuthViewModel) {
             )
 
             Button(
-                onClick = { },
-//                navController.navigate("mainPageScreen")
-                        colors = ButtonDefaults.buttonColors( Color(0xFF3C352E)),
+                onClick = { /* 입장하기 버튼 클릭 시 동작 */ },
+                colors = ButtonDefaults.buttonColors(Color(0xFF3C352E)),
                 modifier = Modifier
                     .fillMaxWidth(0.6f)
                     .padding(vertical = 8.dp),
@@ -68,8 +77,14 @@ fun homeScreen_no( viewModel : KakaoAuthViewModel) {
             ) {
                 Text(text = "로그인", color = Color.White, fontSize = 18.sp)
             }
-
-            }
         }
     }
+}
 
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview() {
+    val navController = rememberNavController()
+    val viewModel: KakaoAuthViewModel = viewModel()
+    homeScreen_no(navController, viewModel)
+}
