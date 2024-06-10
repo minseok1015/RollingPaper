@@ -72,7 +72,7 @@ fun makePage(navController: NavController) {
             OutlinedButton(onClick = { navController.navigate(Routes.Home.route) }) {
                 Text("뒤로가기", fontWeight = FontWeight.Bold)
             }
-            OutlinedButton(onClick = { /* TODO: 페이지 생성 동작 추가 */ }) {
+            OutlinedButton(onClick = { navController.navigate(Routes.Memo.route) }) {
                 Text("페이지 생성", fontWeight = FontWeight.Bold)
             }
         }

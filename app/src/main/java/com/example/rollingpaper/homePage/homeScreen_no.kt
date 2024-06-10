@@ -3,11 +3,13 @@ package com.example.rollingpaper.homePage
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,7 +25,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import com.example.rollingpaper.KakaoAuthViewModel
+
+
 
 @Composable
 fun homeScreen_no(navController: NavController, viewModel: KakaoAuthViewModel) {
@@ -69,13 +77,21 @@ fun homeScreen_no(navController: NavController, viewModel: KakaoAuthViewModel) {
 
             Button(
                 onClick = { viewModel.handleKakaoLogin() },
-                colors = ButtonDefaults.buttonColors(Color(0xFF3C352E)),
+                colors = ButtonDefaults.buttonColors(Color(0xFFFEE500)),
                 modifier = Modifier
                     .fillMaxWidth(0.6f)
-                    .padding(vertical = 8.dp),
-                shape = RoundedCornerShape(8.dp)
+                    .height(60.dp)
+                    .padding(vertical = 8.dp)
+                ,
+                    shape = RoundedCornerShape(8.dp)
             ) {
-                Text(text = "로그인", color = Color.White, fontSize = 18.sp)
+                Image(
+                    painter = painterResource(id =com.example.rollingpaper.R.drawable.kakao_login_medium_narrow ),
+                   contentScale = ContentScale.Crop,
+                    contentDescription = "Localized description",
+                    modifier = Modifier.fillMaxHeight()
+                        .fillMaxWidth()
+                )
             }
         }
     }

@@ -53,7 +53,9 @@
                 )
 
                 Button(
-                    onClick = { navController.navigate(Routes.Page.route)
+                    onClick = {
+                        Log.i("TAG","시작하기 누름")
+                        navController.navigate(Routes.Page.route)
                               },
                     colors = ButtonDefaults.buttonColors( Color(0xFF3C352E)),
                     modifier = Modifier

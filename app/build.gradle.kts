@@ -114,4 +114,6 @@ dependencies {
     implementation("com.kakao.sdk:v2-friend:2.20.1") // 피커 API 모듈
     implementation("com.kakao.sdk:v2-navi:2.20.1") // 카카오내비 API 모듈
     implementation("com.kakao.sdk:v2-cert:2.20.1") // 카카오톡 인증 서비스 API 모듈
+
+//    implementation("com.kakao.sdk:v2-link") // 메시지 카카오링크
 }

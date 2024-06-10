@@ -1,16 +1,17 @@
 package com.example.rollingpaper.makeMemo
 
+import android.content.Context
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -19,17 +20,23 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.rollingpaper.KakaoAuthViewModel
+import com.example.rollingpaper.MainActivity
 import com.example.rollingpaper.R
-import kotlin.math.abs
 
 @Composable
-fun makeMemoScreen(navController: NavController) {
+fun makeMemoScreen(navController: NavController,kakaoAuthViewModel: KakaoAuthViewModel) {
+
+
+    val context = kakaoAuthViewModel.context
+
     var text by remember { mutableStateOf("") }
     var anonymous by remember { mutableStateOf(false) }
     var showFontSizeDialog by remember { mutableStateOf(false) }
     var showTextAlignDialog by remember { mutableStateOf(false) }
     var showColorDialog by remember { mutableStateOf(false) }
-    var fontSize by remember { mutableStateOf(16.sp) } // 기본 글씨 크기
+    var fontSize by remember { mutableStateOf(16.sp) }
     var textAlign by remember { mutableStateOf(TextAlign.Start) }
     var textColor by remember { mutableStateOf(Color.Black) }
     var author by remember { mutableStateOf("") }
@@ -61,7 +68,7 @@ fun makeMemoScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-//            .background(Color(0xFFF5EED3))
+            .background(Color(0xFFF5EED3))
             .padding(16.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -69,32 +76,15 @@ fun makeMemoScreen(navController: NavController) {
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TextField(
+            BasicTextField(
                 value = text,
                 onValueChange = { text = it },
-                placeholder = {
-                    Text(
-                        text = "작성할 내용을 입력해 주세요",
-                        style = androidx.compose.ui.text.TextStyle(
-                            fontSize = fontSize,
-                            textAlign = textAlign,
-                            color = textColor,
-                            fontFamily = when (selectedFont) {
-                                "굴림체" -> FontFamily.Default
-                                "궁서체" -> FontFamily.Serif
-                                "바탕체" -> FontFamily.SansSerif
-                                "고딕체" -> FontFamily.Monospace
-                                else -> FontFamily.Default
-                            }
-                        )
-                    )
-                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
-                    .background(color = Color(0xFFFFFFFF), shape = RoundedCornerShape(8.dp))
+                    .background(color = Color(0xFFF5EED3), shape = RoundedCornerShape(8.dp))
                     .padding(8.dp),
-                textStyle = androidx.compose.ui.text.TextStyle(
+                textStyle = TextStyle(
                     fontSize = fontSize,
                     textAlign = textAlign,
                     color = textColor,
@@ -105,7 +95,41 @@ fun makeMemoScreen(navController: NavController) {
                         "고딕체" -> FontFamily.Monospace
                         else -> FontFamily.Default
                     }
-                )
+                ),
+                decorationBox = { innerTextField ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.White, shape = RoundedCornerShape(8.dp))
+                            .padding(8.dp),
+                        contentAlignment = when (textAlign) {
+                            TextAlign.Center -> Alignment.Center
+                            TextAlign.End -> Alignment.CenterEnd
+                            else -> Alignment.CenterStart
+                        }
+                    ) {
+                        if (text.isEmpty()) {
+                            Text(
+                                text = "작성할 내용을 입력해 주세요",
+                                style = TextStyle(
+                                    fontSize = fontSize,
+                                    textAlign = textAlign,
+                                    color = textColor,
+                                    fontFamily = when (selectedFont) {
+                                        "굴림체" -> FontFamily.Default
+                                        "궁서체" -> FontFamily.Serif
+                                        "바탕체" -> FontFamily.SansSerif
+                                        "고딕체" -> FontFamily.Monospace
+                                        else -> FontFamily.Default
+                                    }
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
+                        }
+                        innerTextField()
+                    }
+                }
             )
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -118,6 +142,7 @@ fun makeMemoScreen(navController: NavController) {
                     modifier = Modifier.weight(1f),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
+                    ,color = Color.Black
                 )
                 Switch(
                     checked = anonymous,
@@ -136,14 +161,54 @@ fun makeMemoScreen(navController: NavController) {
                         text = "From. ",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
+                        ,color = Color.Black
                     )
-                    TextField(
+                    BasicTextField(
                         value = author,
                         onValueChange = { author = it },
-                        placeholder = { Text(text = "작성자") },
                         modifier = Modifier
                             .background(Color.White, shape = RoundedCornerShape(8.dp))
-                            .padding(8.dp)
+                            .padding(8.dp),
+                        textStyle = TextStyle(
+                            fontSize = fontSize,
+                            color = textColor,
+                            fontFamily = when (selectedFont) {
+                                "굴림체" -> FontFamily.Default
+                                "궁서체" -> FontFamily.Serif
+                                "바탕체" -> FontFamily.SansSerif
+                                "고딕체" -> FontFamily.Monospace
+                                else -> FontFamily.Default
+                            }
+                        ),
+                        decorationBox = { innerTextField ->
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(Color.White, shape = RoundedCornerShape(8.dp))
+                                    .padding(8.dp),
+                                contentAlignment = Alignment.CenterStart
+                            ) {
+                                if (author.isEmpty()) {
+                                    Text(
+                                        text = "작성자",
+                                        style = TextStyle(
+                                            fontSize = fontSize,
+                                            color = textColor,
+                                            fontFamily = when (selectedFont) {
+                                                "굴림체" -> FontFamily.Default
+                                                "궁서체" -> FontFamily.Serif
+                                                "바탕체" -> FontFamily.SansSerif
+                                                "고딕체" -> FontFamily.Monospace
+                                                else -> FontFamily.Default
+                                            }
+                                        ),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                    )
+                                }
+                                innerTextField()
+                            }
+                        }
                     )
                 }
             }
@@ -188,6 +253,21 @@ fun makeMemoScreen(navController: NavController) {
                 onClick = { showColorDialog = true }
             )
         }
+        Button(onClick = { kakaoAuthViewModel.shareContent(
+            context = context
+            ,"Dd"
+            ,""
+            ,""
+            ,"https://example.com/callback/"
+        ) },
+            modifier = Modifier.fillMaxWidth()
+                , colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Black
+                    )
+        ) {
+            Text("확인", color = Color.White)
+        }
+
     }
 }
 
@@ -221,16 +301,41 @@ fun FontSizeDialog(fontSize: TextUnit, onDismiss: () -> Unit, onConfirm: (TextUn
 }
 
 @Composable
-fun TextAlignDialog(textAlign: TextAlign, onDismiss: () -> Unit, onConfirm: (TextAlign) -> Unit) {
+fun TextAlignDialog(
+    textAlign: TextAlign,
+    onDismiss: () -> Unit,
+    onConfirm: (TextAlign) -> Unit
+) {
     var newAlign by remember { mutableStateOf(textAlign) }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("글씨 정렬 변경") },
         text = {
             Column {
-                Text("왼쪽 정렬", modifier = Modifier.clickable { newAlign = TextAlign.Start })
-                Text("가운데 정렬", modifier = Modifier.clickable { newAlign = TextAlign.Center })
-                Text("오른쪽 정렬", modifier = Modifier.clickable { newAlign = TextAlign.End })
+                Button(
+                    onClick = { newAlign = TextAlign.Start },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                ) {
+                    Text("왼쪽 정렬")
+                }
+                Button(
+                    onClick = { newAlign = TextAlign.Center },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                ) {
+                    Text("가운데 정렬")
+                }
+                Button(
+                    onClick = { newAlign = TextAlign.End },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                ) {
+                    Text("오른쪽 정렬")
+                }
             }
         },
         confirmButton = {
@@ -254,7 +359,19 @@ fun ColorDialog(textColor: Color, onDismiss: () -> Unit, onConfirm: (Color) -> U
         title = { Text("글씨 색상 변경") },
         text = {
             Column {
-                ColorPicker(initialColor = newColor, onColorChange = { newColor = it })
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    val colors = listOf(Color.Red, Color.Magenta, Color.Yellow, Color.Green, Color.Blue, Color.Black)
+                    colors.forEach { color ->
+                        Button(
+                            onClick = { newColor = color },
+                            colors = ButtonDefaults.buttonColors(containerColor = color),
+                            modifier = Modifier.size(40.dp)
+                        ) {}
+                    }
+                }
             }
         },
         confirmButton = {
@@ -270,96 +387,9 @@ fun ColorDialog(textColor: Color, onDismiss: () -> Unit, onConfirm: (Color) -> U
     )
 }
 
+@Preview(showBackground = true)
 @Composable
-fun ColorPicker(
-    initialColor: Color,
-    onColorChange: (Color) -> Unit
-) {
-    var hue by remember { mutableStateOf(initialColor.toHsl().hue) }
-    var saturation by remember { mutableStateOf(initialColor.toHsl().saturation) }
-    var lightness by remember { mutableStateOf(initialColor.toHsl().lightness) }
-
-    Column(
-        modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth()
-    ) {
-        Text("색상을 선택해 주세요", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Hue Slider
-        Text("Hue", modifier = Modifier.padding(vertical = 8.dp))
-        Slider(
-            value = hue,
-            onValueChange = { newHue ->
-                hue = newHue
-                onColorChange(Color.hsl(hue, saturation, lightness))
-            },
-            valueRange = 0f..360f
-        )
-
-        // Saturation Slider
-        Text("Saturation", modifier = Modifier.padding(vertical = 8.dp))
-        Slider(
-            value =  saturation,
-            onValueChange = { newSaturation ->
-                saturation = newSaturation
-                onColorChange(Color.hsl(hue, saturation, lightness))
-            },
-            valueRange = 0f..1f
-        )
-
-        // Lightness Slider
-        Text("Lightness", modifier = Modifier.padding(vertical = 8.dp))
-        Slider(
-            value = lightness,
-            onValueChange = { newLightness ->
-                lightness = newLightness
-                onColorChange(Color.hsl(hue, saturation, lightness))
-            },
-            valueRange = 0f..1f
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Box(
-            modifier = Modifier
-                .size(100.dp)
-                .background(Color.hsl(hue, saturation, lightness), shape = RoundedCornerShape(8.dp))
-        )
-    }
+fun MakeMemoScreenPreview() {
+    val navController = rememberNavController()
+//    makeMemoScreen(navController)
 }
-
-@Composable
-@Preview
-fun PreviewColorPicker() {
-    var color by remember { mutableStateOf(Color.Red) }
-    ColorPicker(initialColor = color) { newColor ->
-        color = newColor
-    }
-}
-
-// Extension function to convert Color to HSL
-fun Color.toHsl(): HslColor {
-    val r = red
-    val g = green
-    val b = blue
-    val max = maxOf(r, g, b)
-    val min = minOf(r, g, b)
-    val delta = max - min
-
-    val hue = when {
-        delta == 0f -> 0f
-        max == r -> ((g - b) / delta) % 6
-        max == g -> ((b - r) / delta) + 2
-        else -> ((r - g) / delta) + 4
-    } * 60f
-
-    val lightness = (max + min) / 2
-    val saturation = if (delta == 0f) 0f else delta / (1 - abs(2 * lightness - 1))
-
-    return HslColor(hue, saturation, lightness)
-}
-
-data class HslColor(val hue: Float, val saturation: Float, val lightness: Float)
-

@@ -13,16 +13,15 @@ import com.example.rollingpaper.mainPage.MainPageScreen
 import com.example.rollingpaper.makeMemo.makeMemoScreen
 import com.example.rollingpaper.makePage.makePage
 
-sealed class Routes(val route:String){
-    object Home:Routes("Home");
-    object Page:Routes("Page");
-    object Memo:Routes("Memo");
-    object MakePage:Routes("MakePage");
+sealed class Routes(val route: String) {
+    object Home : Routes("Home")
+    object Page : Routes("Page")
+    object Memo : Routes("Memo")
+    object MakePage : Routes("MakePage")
 }
 
-
 @Composable
-fun Graph(navController: NavHostController,kakaoAuthViewModel: KakaoAuthViewModel = viewModel()){
+fun Graph(navController: NavHostController, kakaoAuthViewModel: KakaoAuthViewModel = viewModel()) {
     val isLoggedIn by kakaoAuthViewModel.isLoggedIn.observeAsState(initial = false)
     val loginEvent by kakaoAuthViewModel.loginEvent.observeAsState()
 
@@ -34,26 +33,25 @@ fun Graph(navController: NavHostController,kakaoAuthViewModel: KakaoAuthViewMode
         }
     }
 
-    NavHost(navController = navController, startDestination = Routes.Home.route){
+    NavHost(
+        navController = navController,
+        startDestination = Routes.Home.route
+    ) {
         composable(route = Routes.Home.route) {
             if (isLoggedIn) {
                 homeScreen(navController, kakaoAuthViewModel)
             } else {
-                homeScreen_no(viewModel = kakaoAuthViewModel, navController=navController)
+                homeScreen_no(viewModel = kakaoAuthViewModel, navController = navController)
             }
         }
-        composable(route=Routes.Page.route)
-        {
+        composable(route = Routes.Page.route) {
             MainPageScreen(navController)
         }
-        composable(route=Routes.Memo.route)
-        {
-            makeMemoScreen(navController)
+        composable(route = Routes.Memo.route) {
+            makeMemoScreen(navController,kakaoAuthViewModel)
         }
-        composable(route=Routes.MakePage.route)
-        {
+        composable(route = Routes.MakePage.route) {
             makePage(navController)
         }
-
     }
 }
