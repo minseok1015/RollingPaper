@@ -15,6 +15,10 @@ import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.common.util.KakaoCustomTabsClient
+import com.kakao.sdk.friend.client.PickerClient
+import com.kakao.sdk.friend.model.OpenPickerFriendRequestParams
+import com.kakao.sdk.friend.model.PickerOrientation
+import com.kakao.sdk.friend.model.ViewAppearance
 import com.kakao.sdk.share.ShareClient
 import com.kakao.sdk.share.WebSharerClient
 import com.kakao.sdk.template.model.Button
@@ -43,19 +47,6 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
 
     private val _loginEvent = MutableLiveData<Event<Boolean>>()
     val loginEvent: LiveData<Event<Boolean>> get() = _loginEvent
-
-
-    //공유
-//    private var shareEventListener: ShareEventListener? = null
-//
-//    // Activity에서 이 인터페이스를 설정하는 함수
-//    fun setShareEventListener(listener: ShareEventListener) {
-//        this.shareEventListener = listener
-//    }
-
-    // 공유 버튼 클릭 시 호출되는 함수
-
-    // Activity에서 이 인터페이스를 설정하는 함수
 
     init {
         checkLoginStatus()
@@ -284,6 +275,33 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
+
+    // 친구 목록 가져오기, 친구 선택하기
+//    fun selectFriends() {
+//        val openPickerFriendRequestParams = OpenPickerFriendRequestParams(
+//            title = "풀 스크린 멀티 친구 피커", //default "친구 선택"
+//            viewAppearance = ViewAppearance.AUTO, //default ViewAppearance.AUTO
+//            orientation = PickerOrientation.AUTO, //default PickerOrientation.AUTO
+//            enableSearch = true, //default true
+//            enableIndex = true, //default true
+//            showMyProfile = true, //default true
+//            showFavorite = true, //default true
+//            showPickedFriend = null, // default true
+//            maxPickableCount = null, // default 30
+//            minPickableCount = null // default 1
+//        )
+//
+//        PickerClient.instance.selectFriends(
+//            context = context!!,
+//            params = openPickerFriendRequestParams
+//        ) { selectedUsers, error ->
+//            if (error != null) {
+//                Log.e(TAG, "친구 선택 실패", error)
+//            } else {
+//                Log.d(TAG, "친구 선택 성공 $selectedUsers")
+//            }
+//        }
+//    }
 }
 
 // 이벤트를 처리하기 위한 헬퍼 클래스

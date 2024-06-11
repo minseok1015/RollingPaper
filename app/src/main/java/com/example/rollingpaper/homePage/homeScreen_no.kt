@@ -30,7 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import com.example.rollingpaper.KakaoAuthViewModel
-
+import com.example.rollingpaper.Routes
 
 
 @Composable
@@ -65,7 +65,7 @@ fun homeScreen_no(navController: NavController, viewModel: KakaoAuthViewModel) {
             )
 
             Button(
-                onClick = { /* 입장하기 버튼 클릭 시 동작 */ },
+                onClick = { navController.navigate(Routes.Page.route) },
                 colors = ButtonDefaults.buttonColors(Color(0xFF3C352E)),
                 modifier = Modifier
                     .fillMaxWidth(0.6f)

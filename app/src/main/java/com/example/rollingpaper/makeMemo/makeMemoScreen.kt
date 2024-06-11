@@ -268,6 +268,15 @@ fun makeMemoScreen(navController: NavController,kakaoAuthViewModel: KakaoAuthVie
             Text("확인", color = Color.White)
         }
 
+//        Button(onClick = {kakaoAuthViewModel.selectFriends()  },
+//            modifier = Modifier.fillMaxWidth()
+//            , colors = ButtonDefaults.buttonColors(
+//                containerColor = Color.Black
+//            )
+//        ) {
+//            Text("친구선택", color = Color.White)
+//        }
+
     }
 }
 
@@ -387,9 +396,9 @@ fun ColorDialog(textColor: Color, onDismiss: () -> Unit, onConfirm: (Color) -> U
     )
 }
 
-@Preview(showBackground = true)
-@Composable
-fun MakeMemoScreenPreview() {
-    val navController = rememberNavController()
-//    makeMemoScreen(navController)
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun MakeMemoScreenPreview(kakaoAuthViewModel: KakaoAuthViewModel) {
+//    val navController = rememberNavController()
+//    makeMemoScreen(navController, kakaoAuthViewModel)
+//}
