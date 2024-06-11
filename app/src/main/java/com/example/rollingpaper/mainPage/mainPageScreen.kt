@@ -32,7 +32,6 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -300,20 +299,19 @@ fun TopBar(onMenuClick: () -> Unit, viewModel: KakaoAuthViewModel) {
         )
     }
 
-
-@Composable
-fun DrawerContent() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(text = "로그인하세요", modifier = Modifier.padding(16.dp))
-        Divider()
-        Text(text = "홈", fontSize = 24.sp, modifier = Modifier.padding(16.dp))
-        Text(text = "마이페이지", fontSize = 24.sp, modifier = Modifier.padding(16.dp))
-        Text(text = "Team5", fontSize = 24.sp, modifier = Modifier.padding(16.dp))
-        Text(text = "팀원 소개", fontSize = 24.sp, modifier = Modifier.padding(16.dp))
+    @Composable
+    fun DrawerContent() {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            Text(text = "로그인하세요", modifier = Modifier.padding(16.dp))
+            Text(text = "홈", fontSize = 24.sp, modifier = Modifier.padding(16.dp))
+            Text(text = "마이페이지", fontSize = 24.sp, modifier = Modifier.padding(16.dp))
+            Text(text = "Team5", fontSize = 24.sp, modifier = Modifier.padding(16.dp))
+            Text(text = "팀원 소개", fontSize = 24.sp, modifier = Modifier.padding(16.dp))
+        }
     }
 
     @OptIn(ExperimentalMaterial3Api::class)

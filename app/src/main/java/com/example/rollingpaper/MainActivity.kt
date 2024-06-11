@@ -10,7 +10,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import com.example.rollingpaper.mainPage.MainPageScreen
 import com.example.rollingpaper.ui.theme.RollingPaperTheme
 import com.kakao.sdk.common.util.Utility
 
