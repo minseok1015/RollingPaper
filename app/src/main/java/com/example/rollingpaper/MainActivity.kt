@@ -29,9 +29,6 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     // NavController 초기화
-                    val navController = rememberNavController()
-                    print("hello")
-
 //                    // NavHost에 NavController 연결
 //                    NavHost(navController, startDestination = "homeScreen") {
 //                        composable("homeScreen") {
