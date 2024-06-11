@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "828225921878",
+    "project_id": "rollingpaper-aa328",
+    "storage_bucket": "rollingpaper-aa328.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:828225921878:android:2d0e4a9b318079a21dacf7",
+        "android_client_info": {
+          "package_name": "com.example.rollingpaper"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAG9y192dfZ0akIx70g_8E3bMyfuoA1xjU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

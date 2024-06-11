@@ -31,10 +31,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.rollingpaper.Memo
+import com.example.rollingpaper.MemoViewModel
 import com.example.rollingpaper.R
-
 @Composable
-fun makeMemoScreen(navController: NavController) {
+fun makeMemoScreen(navController: NavController,viewModel: MemoViewModel) {
     var text by remember { mutableStateOf("") }
     var anonymous by remember { mutableStateOf(false) }
     val fontFamilies = listOf("굴림체", "궁서체", "바탕체", "고딕체")
@@ -96,6 +97,7 @@ fun makeMemoScreen(navController: NavController) {
             }
         }
 
+        val memo = Memo(1,"데이터베이스 삽입테스트","민석",14,1,2,14,14,1)
         NavigationBar(
             containerColor = Color.LightGray,
             contentColor = Color.Black,
@@ -106,7 +108,7 @@ fun makeMemoScreen(navController: NavController) {
             NavigationBarItem(
                 icon = { Icon(painter = painterResource(R.drawable.grr), contentDescription = "Text") },
                 selected = false,
-                onClick = { /*TODO*/ }
+                onClick = { viewModel.insertMemo(memo) }
             )
             NavigationBarItem(
                 icon = { Icon(painter = painterResource(R.drawable.grr), contentDescription = "Alignment") },

@@ -14,6 +14,7 @@ import com.example.rollingpaper.ui.theme.RollingPaperTheme
 
 class MainActivity : ComponentActivity() {
     private val kakaoAuthViewModel: KakaoAuthViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

@@ -44,6 +44,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -64,15 +65,24 @@ import com.example.rollingpaper.Memo
 import com.example.rollingpaper.MemoViewModel
 import com.example.rollingpaper.Routes
 import com.example.rollingpaper.StickerViewModel
+import com.example.rollingpaper.component.Colors
+import com.example.rollingpaper.component.FontColors
+import com.example.rollingpaper.component.Fonts
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainPageScreen(navController: NavController, stickerViewModel: StickerViewModel = viewModel()) {
+fun MainPageScreen(navController: NavController,memoModel:MemoViewModel, stickerViewModel: StickerViewModel = viewModel()) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
+
     val scope = rememberCoroutineScope()
+    val memoList by memoModel.memoList.collectAsState(initial = emptyList())
     val kakaoAuthViewModel: KakaoAuthViewModel = viewModel()
+
+    LaunchedEffect(Unit) {
+        memoModel.getAllMemos()
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -132,8 +142,8 @@ fun MainPageScreen(navController: NavController, stickerViewModel: StickerViewMo
                     .padding(innerPadding)
                     .fillMaxSize()
             ) {
-                val memoModel = viewModel<MemoViewModel>()
-                val chunkedItems = memoModel.memoList.chunked(2)
+
+                val chunkedItems = memoList.chunked(2)
 
                 LazyColumn(
                     contentPadding = PaddingValues(16.dp),
@@ -233,7 +243,7 @@ fun MemoItem(MemoContents: Memo, modifier: Modifier = Modifier, onClick: () -> U
             Card(
                 modifier = Modifier.fillMaxSize(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                colors = CardDefaults.cardColors(containerColor = MemoContents.memoColor) // memoColor를 배경색으로 지정
+                colors = CardDefaults.cardColors(containerColor = Colors.getColorByIndex(MemoContents.memoColor)) // memoColor를 배경색으로 지정
             ) {
                 Column(
                     modifier = Modifier
@@ -242,8 +252,14 @@ fun MemoItem(MemoContents: Memo, modifier: Modifier = Modifier, onClick: () -> U
                         .fillMaxHeight(),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = MemoContents.content, color = MemoContents.fontColor)
-                    Text(text = MemoContents.name, color = MemoContents.fontColor)
+                    Text(text = MemoContents.content,
+                        color = FontColors.getFontColorByIndex(MemoContents.fontColor),
+                        fontFamily = Fonts.getFontByIndex(MemoContents.font)
+                    )
+                    Text(text = MemoContents.name,
+                        color =  FontColors.getFontColorByIndex(MemoContents.fontColor),
+                        fontFamily = Fonts.getFontByIndex(MemoContents.font)
+                    )
                 }
             }
             BadgedBox(
