@@ -1,5 +1,8 @@
 package com.example.rollingpaper.mainPage
 
+import android.util.Log
+import androidx.compose.animation.core.Animatable
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,10 +17,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Edit
@@ -40,26 +50,46 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.rollingpaper.KakaoAuthViewModel
 import com.example.rollingpaper.Memo
 import com.example.rollingpaper.MemoViewModel
+import com.example.rollingpaper.R
 import com.example.rollingpaper.Routes
 import com.example.rollingpaper.StickerViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -96,7 +126,8 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
                 Column(
                     horizontalAlignment = Alignment.End,
                     verticalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier
+                        .padding(16.dp)
                 ) {
                     FloatingActionButton(
                         onClick = { navController.navigate(Routes.Memo.route) },
@@ -109,6 +140,7 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
                     FloatingActionButton(
                         onClick = {
                             stickerViewModel.changeShow()
+                            Log.d("mine", stickerViewModel.show.value.toString())
                             stickerViewModel.changeEmoticonShow()
                         },
                         containerColor = Color.Black,
@@ -133,27 +165,97 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
                 val memoModel = viewModel<MemoViewModel>()
                 val chunkedItems = memoModel.memoList.chunked(2)
 
-                LazyColumn(
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+
+                val listState = rememberLazyListState()
+                val itemHeight = with(LocalDensity.current) { 300.dp.toPx() } // Your item height
+                val firstVisibleItemIndex = listState.firstVisibleItemIndex
+                val firstVisibleItemScrollOffset = listState.firstVisibleItemScrollOffset
+                val totalOffsetInPx = firstVisibleItemIndex * 150 + firstVisibleItemScrollOffset
+                val scrollDp =
+                    with(LocalDensity.current) { (firstVisibleItemIndex * 180).dp + firstVisibleItemScrollOffset.toDp() }
+                var imageOffset by remember { mutableStateOf(Offset.Zero) }
+//                Text("dp : $dpjb")
+                Box(
                 ) {
-                    itemsIndexed(chunkedItems) { _, rowItems ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            for (item in rowItems) {
-                                MemoItem(MemoContents = item, modifier = Modifier.weight(1f)) {
-                                    // onClick 핸들러
+
+                    LazyColumn(
+                        state = listState,
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        itemsIndexed(chunkedItems) { _, rowItems ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                for (item in rowItems) {
+                                    MemoItem(MemoContents = item, modifier = Modifier.weight(1f)) {
+                                        // onClick 핸들러
+                                    }
                                 }
-                            }
-                            if (rowItems.size < 2) {
-                                for (i in rowItems.size until 2) {
-                                    Spacer(modifier = Modifier.weight(1f))
+                                if (rowItems.size < 2) {
+                                    for (i in rowItems.size until 2) {
+                                        Spacer(modifier = Modifier.weight(1f))
+                                    }
                                 }
                             }
                         }
+
                     }
+                    stickerViewModel.selectedArray.mapIndexed { idx, sticker ->
+                        var xdp = with(LocalDensity.current) { sticker.offsetX.toDp() }
+                        var ydp = with(LocalDensity.current) { sticker.offsetY.toDp() }
+                        Box(
+                            modifier = Modifier
+                                .offset(
+                                    x = xdp,
+                                    y = ydp - scrollDp
+                                )
+                                .height(130.dp)
+                                .width(130.dp)
+                                .clickable {
+                                    stickerViewModel.toggleDeleteButton(idx)
+                                }
+                                .onGloballyPositioned { layoutCoordinates ->
+                                    imageOffset = layoutCoordinates.positionInRoot()
+                                }
+                        ) {
+                            Image(
+                                painter = BitmapPainter(
+                                    sticker.sticker?.toBitmap()!!.asImageBitmap()
+                                ),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(130.dp)
+                                    .padding(top = 15.dp)
+
+                            )
+                            if (sticker.deletable) {
+                                IconButton(
+                                    onClick = {
+                                        stickerViewModel.removeSticker(idx)
+                                    },
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                ) {
+
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = null,
+                                        tint = Color.Red,
+                                        modifier = Modifier.size(100.dp)
+                                    )
+
+                                }
+                            }
+
+                        }
+                        LaunchedEffect(imageOffset) {
+                            println("Image offset: $imageOffset")
+
+                        }
+                    }
+                    MainScreen()
                 }
             }
         }
@@ -189,8 +291,7 @@ fun TopBar(onMenuClick: () -> Unit, viewModel: KakaoAuthViewModel) {
             titleContentColor = Color.Black,
             actionIconContentColor = Color.Black
         )
-    )
-}
+    }
 
 
 @Composable
@@ -207,56 +308,55 @@ fun DrawerContent() {
         Text(text = "Team5", fontSize = 24.sp, modifier = Modifier.padding(16.dp))
         Text(text = "팀원 소개", fontSize = 24.sp, modifier = Modifier.padding(16.dp))
     }
-}
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MemoItem(MemoContents: Memo, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    val rotationAngle = Random.nextFloat() * 10 - 5 // -5도에서 5도 사이의 랜덤 각도
-    var likes by remember { mutableStateOf(MemoContents.like) }
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun MemoItem(MemoContents: Memo, modifier: Modifier = Modifier, onClick: () -> Unit) {
+        val rotationAngle = Random.nextFloat() * 10 - 5 // -5도에서 5도 사이의 랜덤 각도
+        var likes by remember { mutableStateOf(MemoContents.like) }
 
-    Box(modifier = modifier.padding(8.dp)) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp)
-                .graphicsLayer(rotationZ = rotationAngle)
-        ) {
-            Card(
-                modifier = Modifier.fillMaxSize(),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                colors = CardDefaults.cardColors(containerColor = MemoContents.memoColor) // memoColor를 배경색으로 지정
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth()
-                        .fillMaxHeight(),
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = MemoContents.content, color = MemoContents.fontColor)
-                    Text(text = MemoContents.name, color = MemoContents.fontColor)
-                }
-            }
-            BadgedBox(
+        Box(modifier = modifier.padding(8.dp)) {
+            Box(
                 modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .offset(x = (-8).dp, y = 8.dp),
-                badge = {
-                    Badge {
-                        Text(text = "$likes")
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .graphicsLayer(rotationZ = rotationAngle)
+            ) {
+                Card(
+                    modifier = Modifier.fillMaxSize(),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    colors = CardDefaults.cardColors(containerColor = MemoContents.memoColor) // memoColor를 배경색으로 지정
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth()
+                            .fillMaxHeight(),
+                        verticalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(text = MemoContents.content, color = MemoContents.fontColor)
+                        Text(text = MemoContents.name, color = MemoContents.fontColor)
                     }
                 }
-            ) {
-                Icon(
-                    Icons.Default.Favorite,
-                    contentDescription = null,
-                    tint = Color.Red,
-                    modifier = Modifier.clickable { likes++ }
-                )
+                BadgedBox(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .offset(x = (-8).dp, y = 8.dp),
+                    badge = {
+                        Badge {
+                            Text(text = "$likes")
+                        }
+                    }
+                ) {
+                    Icon(
+                        Icons.Default.Favorite,
+                        contentDescription = null,
+                        tint = Color.Red,
+                        modifier = Modifier.clickable { likes++ }
+                    )
+                }
             }
         }
     }
-}
 
 
