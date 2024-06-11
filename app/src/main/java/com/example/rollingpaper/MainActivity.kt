@@ -9,10 +9,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import com.example.rollingpaper.mainPage.MainPageScreen
 import com.example.rollingpaper.ui.theme.RollingPaperTheme
 
 
 class MainActivity : ComponentActivity() {
+
     private val kakaoAuthViewModel: KakaoAuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,6 +28,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     // NavController 초기화
                     val navController = rememberNavController()
+                    print("hello")
 
 //                    // NavHost에 NavController 연결
 //                    NavHost(navController, startDestination = "homeScreen") {
@@ -35,15 +38,13 @@ class MainActivity : ComponentActivity() {
 //                        composable("makeMemoScreen") {
 //                            makeMemoScreen()
 //                        }
-                    val navcontroller= rememberNavController()
-                    Graph(navcontroller)
-//
-                        // 다른 destination 추가
-                    }
+                    val navcontroller = rememberNavController()
+                    MainPageScreen(navController = navController)
+
                 }
             }
         }
+
     }
-
-
+}
 
