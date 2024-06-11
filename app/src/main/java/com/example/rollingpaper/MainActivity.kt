@@ -9,7 +9,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import com.example.rollingpaper.mainPage.MainPageScreen
 import com.example.rollingpaper.ui.theme.RollingPaperTheme
 
 
@@ -35,8 +34,8 @@ class MainActivity : ComponentActivity() {
 //                        composable("makeMemoScreen") {
 //                            makeMemoScreen()
 //                        }
-                    val navcontroller = rememberNavController()
-                    MainPageScreen(navController = navcontroller)
+                    val navcontroller= rememberNavController()
+                    Graph(navcontroller)
 
                 }
             }
