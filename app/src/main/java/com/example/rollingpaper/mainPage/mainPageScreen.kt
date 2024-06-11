@@ -1,8 +1,6 @@
 package com.example.rollingpaper.mainPage
 
-import android.app.Application
 import android.util.Log
-import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,12 +19,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
@@ -51,17 +46,14 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -85,19 +77,14 @@ import androidx.navigation.NavController
 import com.example.rollingpaper.KakaoAuthViewModel
 import com.example.rollingpaper.Memo
 import com.example.rollingpaper.MemoViewModel
-import com.example.rollingpaper.R
-import com.example.rollingpaper.MemoViewModelFactory
-import com.example.rollingpaper.Repository
 import com.example.rollingpaper.Routes
 import com.example.rollingpaper.StickerViewModel
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import com.example.rollingpaper.component.Colors
 import com.example.rollingpaper.component.FontColors
 import com.example.rollingpaper.component.Fonts
+import com.google.firebase.Firebase
+import com.google.firebase.database.database
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -109,7 +96,7 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
     val context = KakaoAuthViewModel.context
     val lazyListState = rememberLazyListState()
     val table= Firebase.database.getReference("Pages/memos")
-    val memoModel: MemoViewModel = viewModel(factory = MemoViewModelFactory(application, Repository(table)))
+//    val memoModel: MemoViewModel = viewModel(factory = MemoViewModelFactory(application, Repository(table)))
     val memoList by memoModel.memoList.collectAsState(initial = emptyList())
 
     val themeColor = when (theme) {
@@ -345,7 +332,7 @@ fun DrawerContent() {
                 Card(
                     modifier = Modifier.fillMaxSize(),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                    colors = CardDefaults.cardColors(containerColor = MemoContents.memoColor) // memoColor를 배경색으로 지정
+                    colors = CardDefaults.cardColors(containerColor = Colors.getColorByIndex(MemoContents.memoColor)) // memoColor를 배경색으로 지정
                 ) {
                     Column(
                         modifier = Modifier
