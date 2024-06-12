@@ -47,7 +47,6 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -81,8 +80,6 @@ import com.example.rollingpaper.StickerViewModel
 import com.example.rollingpaper.component.Colors
 import com.example.rollingpaper.component.FontColors
 import com.example.rollingpaper.component.Fonts
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -92,9 +89,8 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
 
     val scope = rememberCoroutineScope()
-    val context = KakaoAuthViewModel.context
-    val lazyListState = rememberLazyListState()
-    val table= Firebase.database.getReference("Pages/memos")
+//    val lazyListState = rememberLazyListState()
+//    val table= Firebase.database.getReference("Pages/memos")
 //    val memoModel: MemoViewModel = viewModel(factory = MemoViewModelFactory(application, Repository(table)))
     val memoList by memoModel.memoList.collectAsState(initial = emptyList())
 
@@ -105,7 +101,7 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
         else -> Color.White
     }
 
-    val scrollOffset by remember { derivedStateOf { lazyListState.firstVisibleItemScrollOffset } }
+//    val scrollOffset by remember { derivedStateOf { lazyListState.firstVisibleItemScrollOffset } }
     LaunchedEffect(Unit) {
         memoModel.getAllMemos()
     }
@@ -171,10 +167,10 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
 
 
                 val listState = rememberLazyListState()
-                val itemHeight = with(LocalDensity.current) { 300.dp.toPx() } // Your item height
+//                val itemHeight = with(LocalDensity.current) { 300.dp.toPx() } // Your item height
                 val firstVisibleItemIndex = listState.firstVisibleItemIndex
                 val firstVisibleItemScrollOffset = listState.firstVisibleItemScrollOffset
-                val totalOffsetInPx = firstVisibleItemIndex * 150 + firstVisibleItemScrollOffset
+//                val totalOffsetInPx = firstVisibleItemIndex * 150 + firstVisibleItemScrollOffset
                 val scrollDp =
                     with(LocalDensity.current) { (firstVisibleItemIndex * 180).dp + firstVisibleItemScrollOffset.toDp() }
                 var imageOffset by remember { mutableStateOf(Offset.Zero) }
