@@ -49,12 +49,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.rollingpaper.KakaoAuthViewModel
-import com.example.rollingpaper.MainScreen
 import com.example.rollingpaper.Memo
 import com.example.rollingpaper.MemoViewModel
 import com.example.rollingpaper.Routes
@@ -64,10 +64,17 @@ import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainPageScreen(navController: NavController,stickerViewModel: StickerViewModel = viewModel(), KakaoAuthViewModel: KakaoAuthViewModel) {
+fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: NavController, stickerViewModel: StickerViewModel = viewModel(), kakaoAuthViewModel: KakaoAuthViewModel) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val context = KakaoAuthViewModel.context
+    val context = kakaoAuthViewModel.context
+
+    val themeColor = when (theme) {
+        1 -> Color(0xFFD7FBE8)
+        2 -> Color(0xFFD7E8FB)
+        3 -> Color(0xFFFBD7D7)
+        else -> Color.White
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -84,7 +91,7 @@ fun MainPageScreen(navController: NavController,stickerViewModel: StickerViewMod
         scrimColor = Color.Black.copy(alpha = 0.32f) // 스크림 색상 설정
     ) {
         Scaffold(
-            topBar = { TopBar(onMenuClick = { scope.launch { drawerState.open() } }, KakaoAuthViewModel) },
+            topBar = { TopBar(onMenuClick = { scope.launch { drawerState.open() } }, kakaoAuthViewModel) },
             floatingActionButton = {
                 Column(
                     horizontalAlignment = Alignment.End,
@@ -117,7 +124,12 @@ fun MainPageScreen(navController: NavController,stickerViewModel: StickerViewMod
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize()
+                    .background(themeColor)
             ) {
+                Text("페이지 ID: $pageId", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(16.dp))
+                Text("제목: $title", fontSize = 18.sp, fontWeight = FontWeight.Medium)
+
                 val memoModel = viewModel<MemoViewModel>()
                 val chunkedItems = memoModel.memoList.chunked(2)
 
@@ -146,7 +158,6 @@ fun MainPageScreen(navController: NavController,stickerViewModel: StickerViewMod
             }
         }
     }
-    MainScreen()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -247,4 +258,5 @@ fun MemoItem(MemoContents: Memo, modifier: Modifier = Modifier, onClick: () -> U
         }
     }
 }
+
 

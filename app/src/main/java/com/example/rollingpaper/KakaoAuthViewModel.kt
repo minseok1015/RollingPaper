@@ -20,7 +20,6 @@ import com.kakao.sdk.friend.model.PickerOrientation
 import com.kakao.sdk.friend.model.ViewAppearance
 import com.kakao.sdk.share.ShareClient
 import com.kakao.sdk.share.WebSharerClient
-import com.kakao.sdk.talk.TalkApiClient
 import com.kakao.sdk.template.model.Button
 import com.kakao.sdk.template.model.Content
 import com.kakao.sdk.template.model.FeedTemplate
@@ -302,24 +301,24 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
             }
         }
     }
-    fun sendMessagesToFriends(friendIds: List<Long>) {
-        val context = getApplication<Application>().applicationContext
-        val message = "안녕하세요! 이 메시지는 자동으로 전송된 것입니다."
-
-        for (friendId in friendIds) {
-            TalkApiClient.instance.sendDefaultMessage(
-                receiverUuids = listOf(friendId.toString()),
-                templateId = YOUR_TEMPLATE_ID, // 템플릿 ID를 여기에 입력하세요
-                templateArgs = mapOf("KEY" to "VALUE") // 템플릿에 필요한 인자들을 여기에 입력하세요
-            ) { result, error ->
-                if (error != null) {
-                    Log.e(TAG, "메시지 전송 실패: $friendId", error)
-                } else {
-                    Log.i(TAG, "메시지 전송 성공: $friendId")
-                }
-            }
-        }
-    }
+//    fun sendMessagesToFriends(friendIds: List<Long>) {
+//        val context = getApplication<Application>().applicationContext
+//        val message = "안녕하세요! 이 메시지는 자동으로 전송된 것입니다."
+//
+//        for (friendId in friendIds) {
+//            TalkApiClient.instance.sendDefaultMessage(
+//                receiverUuids = listOf(friendId.toString()),
+//                templateId = YOUR_TEMPLATE_ID, // 템플릿 ID를 여기에 입력하세요
+//                templateArgs = mapOf("KEY" to "VALUE") // 템플릿에 필요한 인자들을 여기에 입력하세요
+//            ) { result, error ->
+//                if (error != null) {
+//                    Log.e(TAG, "메시지 전송 실패: $friendId", error)
+//                } else {
+//                    Log.i(TAG, "메시지 전송 성공: $friendId")
+//                }
+//            }
+//        }
+//    }
 
 }
 

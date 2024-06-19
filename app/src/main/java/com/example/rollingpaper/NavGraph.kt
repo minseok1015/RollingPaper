@@ -10,15 +10,15 @@ import androidx.navigation.compose.composable
 import com.example.rollingpaper.homePage.homeScreen
 import com.example.rollingpaper.homePage.homeScreen_no
 import com.example.rollingpaper.mainPage.MainPageScreen
-import com.example.rollingpaper.makeMemo.makeMemoScreen
-import com.example.rollingpaper.makePage.makePage
+import makePage
 
 sealed class Routes(val route: String) {
     object Home : Routes("Home")
     object Page : Routes("Page")
-    object Memo : Routes("Memo")
+    object Memo : Routes("Memo/{pageId}?title={title}&theme={theme}")
     object MakePage : Routes("MakePage")
 }
+
 
 @Composable
 fun Graph(navController: NavHostController, stickerViewModel: StickerViewModel, kakaoAuthViewModel: KakaoAuthViewModel = viewModel()) {
@@ -45,13 +45,18 @@ fun Graph(navController: NavHostController, stickerViewModel: StickerViewModel, 
             }
         }
         composable(route = Routes.Page.route) {
-            MainPageScreen(navController, stickerViewModel ,kakaoAuthViewModel)
+            MainPageScreen("0000000000", "기본", 1, navController, stickerViewModel ,kakaoAuthViewModel)
         }
-        composable(route = Routes.Memo.route) {
-            makeMemoScreen(navController,kakaoAuthViewModel)
+        composable(route = Routes.Memo.route) { backStackEntry ->
+            val pageId = backStackEntry.arguments?.getString("pageId")
+            val title = backStackEntry.arguments?.getString("title")
+            val theme = backStackEntry.arguments?.getString("theme")?.toIntOrNull()
+            MainPageScreen(pageId = pageId, title = title, theme = theme, navController = navController, stickerViewModel = stickerViewModel, kakaoAuthViewModel = kakaoAuthViewModel)
         }
         composable(route = Routes.MakePage.route) {
             makePage(navController)
         }
     }
 }
+
+

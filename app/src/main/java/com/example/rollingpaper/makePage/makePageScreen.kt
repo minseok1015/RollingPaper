@@ -1,5 +1,3 @@
-package com.example.rollingpaper.makePage
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.rollingpaper.Routes
+import java.util.UUID
 
 @Composable
 fun makePage(navController: NavController) {
@@ -72,7 +71,10 @@ fun makePage(navController: NavController) {
             OutlinedButton(onClick = { navController.navigate(Routes.Home.route) }) {
                 Text("뒤로가기", fontWeight = FontWeight.Bold)
             }
-            OutlinedButton(onClick = { navController.navigate(Routes.Memo.route) }) {
+            OutlinedButton(onClick = {
+                val pageId = generatePageId()
+                navController.navigate("Memo/${pageId}?title=${titleText}&theme=${selectedTheme}")
+            }) {
                 Text("페이지 생성", fontWeight = FontWeight.Bold)
             }
         }
@@ -98,4 +100,9 @@ fun ThemeOption(text: String, color: Color, isSelected: Boolean, onClick: () -> 
         Spacer(modifier = Modifier.weight(1f))
         RadioButton(selected = isSelected, onClick = onClick)
     }
+}
+
+
+fun generatePageId(): String {
+    return UUID.randomUUID().toString().replace("-", "").substring(0, 10)
 }
