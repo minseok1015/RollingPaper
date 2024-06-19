@@ -1,6 +1,5 @@
     package com.example.rollingpaper.homePage
 
-    import android.content.ContentValues.TAG
     import android.util.Log
     import androidx.compose.foundation.background
     import androidx.compose.foundation.layout.Arrangement
@@ -22,11 +21,9 @@
     import androidx.compose.ui.text.font.FontWeight
     import androidx.compose.ui.unit.dp
     import androidx.compose.ui.unit.sp
-    import androidx.lifecycle.viewmodel.compose.viewModel
     import androidx.navigation.NavController
     import com.example.rollingpaper.KakaoAuthViewModel
     import com.example.rollingpaper.Routes
-    import com.kakao.sdk.user.UserApiClient
 
 
     @Composable
@@ -55,7 +52,7 @@
                 Button(
                     onClick = {
                         Log.i("TAG","시작하기 누름")
-                        navController.navigate(Routes.Page.route)
+                        navController.navigate(Routes.EnterPage.route)
                               },
                     colors = ButtonDefaults.buttonColors( Color(0xFF3C352E)),
                     modifier = Modifier

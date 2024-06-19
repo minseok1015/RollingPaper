@@ -37,5 +37,12 @@ class MemoViewModel(private val application: Application, private val repository
             }
         }
     }
+    fun getPageInfo(pageId: String, onSuccess: (Page) -> Unit, onError: (Throwable) -> Unit) {
+        viewModelScope.launch {
+            repository.getPageInfo(pageId).collect { page ->
+                page?.let(onSuccess) ?: onError(Exception("Page not found"))
+            }
+        }
+    }
 }
 

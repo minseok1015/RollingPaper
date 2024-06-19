@@ -1,5 +1,7 @@
 package com.example.rollingpaper
 
+import PageViewModel
+import PageViewModelFactory
 import android.app.Application
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -9,6 +11,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.rollingpaper.EnterPage.EnterPageScreen
 import com.example.rollingpaper.homePage.homeScreen
 import com.example.rollingpaper.homePage.homeScreen_no
 import com.example.rollingpaper.mainPage.MainPageScreen
@@ -19,9 +22,11 @@ import makePage
 
 sealed class Routes(val route: String) {
     object Home : Routes("Home")
-    object Page : Routes("Page")
+    object Page : Routes("Page/{pageId}?title={title}&theme={theme}")
     object Memo : Routes("Memo/{pageId}")
     object MakePage : Routes("MakePage")
+
+    object EnterPage : Routes("EnterPage")
 }
 
 
@@ -54,12 +59,19 @@ fun Graph(navController: NavHostController, kakaoAuthViewModel: KakaoAuthViewMod
                 homeScreen_no(viewModel = kakaoAuthViewModel, navController = navController)
             }
         }
-        composable(route = Routes.Page.route) {
-//            val pageId = backStackEntry.arguments?.getString("pageId")
-//            val title = backStackEntry.arguments?.getString("title")
-//            val theme = backStackEntry.arguments?.getString("theme")?.toIntOrNull()
-            MainPageScreen("0000000000", "기본", 1, navController= navController,memoModel= memoModel ,kakaoAuthViewModel= kakaoAuthViewModel)
+        composable(route = Routes.Page.route) {backStackEntry ->
+            val pageId = backStackEntry.arguments?.getString("pageId")
+            val title = backStackEntry.arguments?.getString("title")
+            val theme = backStackEntry.arguments?.getString("theme")?.toIntOrNull()
+            MainPageScreen(pageId=pageId,title=title,theme= theme, navController= navController,memoModel= memoModel ,kakaoAuthViewModel= kakaoAuthViewModel)
         }
+        composable(route = Routes.Page.route) {backStackEntry ->
+            val pageId = backStackEntry.arguments?.getString("pageId")
+            val title = backStackEntry.arguments?.getString("title")
+            val theme = backStackEntry.arguments?.getString("theme")?.toIntOrNull()
+            MainPageScreen(pageId=pageId,title=title,theme= theme, navController= navController,memoModel= memoModel ,kakaoAuthViewModel= kakaoAuthViewModel)
+        }
+
         composable(route = Routes.Memo.route) { backStackEntry ->
             val pageId = backStackEntry.arguments?.getString("pageId")
             pageId?.let { makeMemoScreen(pageId = "c94a88d03c", navController = navController,memoModel= memoModel,kakaoAuthViewModel= kakaoAuthViewModel) }
@@ -67,6 +79,9 @@ fun Graph(navController: NavHostController, kakaoAuthViewModel: KakaoAuthViewMod
 
         composable(route = Routes.MakePage.route) {
             makePage(navController)
+        }
+        composable(route=Routes.EnterPage.route){
+            EnterPageScreen(navController,memoModel)
         }
     }
 }

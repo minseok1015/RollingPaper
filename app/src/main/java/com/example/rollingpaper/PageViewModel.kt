@@ -12,6 +12,8 @@ class PageViewModel(private val repository: Repository) : ViewModel() {
             repository.insertPage(page)
         }
     }
+
+
 }
 
 class PageViewModelFactory(private val repository: Repository) : ViewModelProvider.Factory {
