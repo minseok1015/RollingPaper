@@ -10,6 +10,7 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 
 class Repository(private val table: DatabaseReference) {
     suspend fun insertMemo(pageId: String, memo: Memo) {
@@ -76,6 +77,10 @@ class Repository(private val table: DatabaseReference) {
                 }
             }
         })
+    }
+    suspend fun getCurrentMemoId(): Int {
+        val dataSnapshot = table.child("currentMemoId").get().await()
+        return dataSnapshot.getValue(Int::class.java) ?: 0
     }
 
 }

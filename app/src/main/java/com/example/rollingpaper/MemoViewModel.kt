@@ -20,7 +20,13 @@ class MemoViewModelFactory(private val application: Application, private val rep
 }
 
 class MemoViewModel(private val application: Application, private val repository: Repository) : AndroidViewModel(application) {
-    private var currentMemoId = 20
+    private var currentMemoId = 0
+
+    init {
+        viewModelScope.launch {
+            currentMemoId = repository.getCurrentMemoId()
+        }
+    }
 
     fun getNextMemoId(): Int {
         currentMemoId++
