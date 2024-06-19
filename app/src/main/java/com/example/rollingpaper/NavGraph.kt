@@ -21,18 +21,16 @@ import makePage
 sealed class Routes(val route: String) {
     object Home : Routes("Home")
     object Page : Routes("Page/{pageId}?title={title}&theme={theme}")
-    object Memo : Routes("Memo/{pageId}")
+    object Memo : Routes("Memo/{pageId}?title={title}&theme={theme}")
     object MakePage : Routes("MakePage")
-
     object EnterPage : Routes("EnterPage")
 }
-
 
 @Composable
 fun Graph(navController: NavHostController, kakaoAuthViewModel: KakaoAuthViewModel = viewModel()) {
     val isLoggedIn by kakaoAuthViewModel.isLoggedIn.observeAsState(initial = false)
     val loginEvent by kakaoAuthViewModel.loginEvent.observeAsState()
-    val table= Firebase.database.getReference("Pages")
+    val table = Firebase.database.getReference("Pages")
     val application = LocalContext.current.applicationContext as Application
     val memoModel: MemoViewModel = viewModel(factory = MemoViewModelFactory(application, Repository(table)))
     val stickerViewModel: StickerViewModel = viewModel()
@@ -42,7 +40,6 @@ fun Graph(navController: NavHostController, kakaoAuthViewModel: KakaoAuthViewMod
             navController.navigate(Routes.Home.route) {
                 popUpTo(Routes.Home.route) { inclusive = true }
             }
-   
         }
     }
 
@@ -58,25 +55,29 @@ fun Graph(navController: NavHostController, kakaoAuthViewModel: KakaoAuthViewMod
             }
         }
 
-        composable(route = Routes.Page.route) {backStackEntry ->
+        composable(route = Routes.Page.route) { backStackEntry ->
             val pageId = backStackEntry.arguments?.getString("pageId")
             val title = backStackEntry.arguments?.getString("title")
             val theme = backStackEntry.arguments?.getString("theme")?.toIntOrNull()
-            MainPageScreen(pageId=pageId,title=title,theme= theme, navController= navController,memoModel= memoModel ,kakaoAuthViewModel= kakaoAuthViewModel)
+            MainPageScreen(pageId = pageId, title = title, theme = theme, navController = navController, memoModel = memoModel, kakaoAuthViewModel = kakaoAuthViewModel)
         }
 
         composable(route = Routes.Memo.route) { backStackEntry ->
             val pageId = backStackEntry.arguments?.getString("pageId")
-            pageId?.let { makeMemoScreen(pageId = "c94a88d03c", navController = navController,memoModel= memoModel,kakaoAuthViewModel= kakaoAuthViewModel) }
+            val title = backStackEntry.arguments?.getString("title")
+            val theme = backStackEntry.arguments?.getString("theme")?.toIntOrNull()
+            println("Received pageId: $pageId, title: $title, theme: $theme")
+            pageId?.let {
+                makeMemoScreen(pageId = it,  navController = navController, memoModel = memoModel, kakaoAuthViewModel = kakaoAuthViewModel)
+            }
         }
 
         composable(route = Routes.MakePage.route) {
             makePage(navController)
         }
-        composable(route=Routes.EnterPage.route){
-            checkPage(navController,memoModel)
+
+        composable(route = Routes.EnterPage.route) {
+            checkPage(navController, memoModel)
         }
     }
 }
-
-
