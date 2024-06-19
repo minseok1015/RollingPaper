@@ -360,7 +360,7 @@ fun TextAlignDialog(textAlign: TextAlign, onDismiss: () -> Unit, onConfirm: (Tex
                             onClick = { selectedTextAlign = align }
                         )
                         Text(
-                            text = align.name,
+                            text = align.toString(),
                             modifier = Modifier.padding(start = 8.dp)
                         )
                     }
