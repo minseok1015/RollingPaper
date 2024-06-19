@@ -54,13 +54,13 @@ fun Graph(navController: NavHostController, kakaoAuthViewModel: KakaoAuthViewMod
             }
         }
         composable(route = Routes.Page.route) {
-            MainPageScreen("0000000000", "기본", 1, navController,memoModel, stickerViewModel ,kakaoAuthViewModel)
+            MainPageScreen("0000000000", "기본", 1, navController= navController,memoModel= memoModel ,kakaoAuthViewModel= kakaoAuthViewModel)
         }
         composable(route = Routes.Memo.route) { backStackEntry ->
             val pageId = backStackEntry.arguments?.getString("pageId")
             val title = backStackEntry.arguments?.getString("title")
             val theme = backStackEntry.arguments?.getString("theme")?.toIntOrNull()
-            MainPageScreen(pageId = pageId, title = title, theme = theme, navController = navController, memoModel,stickerViewModel = stickerViewModel, kakaoAuthViewModel = kakaoAuthViewModel)
+            MainPageScreen(pageId = pageId, title = title, theme = theme, navController = navController, memoModel, kakaoAuthViewModel = kakaoAuthViewModel)
         }
         composable(route = Routes.MakePage.route) {
             makePage(navController)
