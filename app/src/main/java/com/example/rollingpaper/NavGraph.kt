@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import com.example.rollingpaper.homePage.homeScreen
 import com.example.rollingpaper.homePage.homeScreen_no
 import com.example.rollingpaper.mainPage.MainPageScreen
+import com.example.rollingpaper.makeMemo.makeMemoScreen
 import makePage
 
 sealed class Routes(val route: String) {
@@ -45,8 +46,9 @@ fun Graph(navController: NavHostController, stickerViewModel: StickerViewModel, 
             }
         }
         composable(route = Routes.Page.route) {
-            MainPageScreen("0000000000", "기본", 1, navController, stickerViewModel ,kakaoAuthViewModel)
+            makeMemoScreen(navController = navController, kakaoAuthViewModel = kakaoAuthViewModel)
         }
+
         composable(route = Routes.Memo.route) { backStackEntry ->
             val pageId = backStackEntry.arguments?.getString("pageId")
             val title = backStackEntry.arguments?.getString("title")

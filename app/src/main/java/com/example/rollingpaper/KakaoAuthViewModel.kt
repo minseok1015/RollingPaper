@@ -281,21 +281,21 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     val openPickerFriendRequestParams = OpenPickerFriendRequestParams(
-        title = "풀 스크린 멀티 친구 피커", //default "친구 선택"
+        title = "Rolling Paper 공유하기", //default "친구 선택"
         viewAppearance = ViewAppearance.AUTO, //default ViewAppearance.AUTO
         orientation = PickerOrientation.AUTO, //default PickerOrientation.AUTO
         enableSearch = true, //default true
         enableIndex = true, //default true
         showMyProfile = true, //default true
         showFavorite = true, //default true
-        showPickedFriend = null, // default true
-        maxPickableCount = null, // default 30
-        minPickableCount = null // default 1
+        showPickedFriend = true, // default true
+        maxPickableCount = 30, // default 30
+        minPickableCount = 1 // default 1
     )
 
     fun openPicker(pageId: String?){
         // 피커 호출
-        PickerClient.instance.selectFriend(
+        PickerClient.instance.selectFriends(
             context = context,
             params = openPickerFriendRequestParams
         ) { selectedUsers, error ->
@@ -340,7 +340,7 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
                     var defaultFeed = FeedTemplate(
                         content = Content(
                             title = "Rolling Paper",
-                            description = friendName +" 님을 초대합니다. 초대코드 : " + pageId,
+                            description = friendName +"님을 초대합니다.\n초대코드 : " + pageId,
                             imageUrl = "https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png",
                             link = Link(
                                 webUrl = "https://developers.kakao.com",
