@@ -340,7 +340,7 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
                     var defaultFeed = FeedTemplate(
                         content = Content(
                             title = "Rolling Paper",
-                            description = friendName +"님을 초대합니다.\n초대코드 : " + pageId,
+                            description = friend.profileNickname +"님을 초대합니다.\n초대코드 : " + pageId,
                             imageUrl = "https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png",
                             link = Link(
                                 webUrl = "https://developers.kakao.com",
