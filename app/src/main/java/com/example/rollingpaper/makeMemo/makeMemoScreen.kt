@@ -276,6 +276,7 @@ fun makeMemoScreen(pageId: String, navController: NavController, kakaoAuthViewMo
                     fontColor = FontColors.fontColorsArray.indexOfFirst { it.color == textColor },
                     memoColor = Colors.colorsArray.indexOfFirst { it.color == backgroundColor },
                     like = 0,
+
                 )
             )
             memoModel.getPageInfo(pageId, onSuccess = { page ->

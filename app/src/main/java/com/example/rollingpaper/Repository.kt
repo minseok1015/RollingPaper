@@ -13,8 +13,9 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
 class Repository(private val table: DatabaseReference) {
-    suspend fun insertMemo(pageId: String, memo: Memo) {
+    suspend fun insertMemo(pageId: String, memo: Memo,currentMemoId:Int) {
         table.child(pageId).child("memos").child(memo.memoId.toString()).setValue(memo)
+        table.child("currentMemoId").setValue(currentMemoId + 1)
     }
 
 
