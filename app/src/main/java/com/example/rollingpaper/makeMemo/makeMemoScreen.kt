@@ -1,5 +1,6 @@
 package com.example.rollingpaper.makeMemo
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,7 +44,6 @@ import com.example.rollingpaper.KakaoAuthViewModel
 import com.example.rollingpaper.Memo
 import com.example.rollingpaper.MemoViewModel
 import com.example.rollingpaper.R
-import com.example.rollingpaper.Routes
 
 @Composable
 fun makeMemoScreen(pageId: String, navController: NavController,kakaoAuthViewModel: KakaoAuthViewModel,memoModel: MemoViewModel) {
@@ -283,8 +283,13 @@ fun makeMemoScreen(pageId: String, navController: NavController,kakaoAuthViewMod
 //
 //        )
 
-            memoModel.insertMemo(pageId,Memo(1,"데이터베이스 삽입테스트","민석",14,1,2,14,14,1))
-            navController.navigate(Routes.Page.route)
+            memoModel.insertMemo(pageId,Memo(2,"데이터베이스 삽입테스트","민석",14,1,2,14,14,1))
+            memoModel.getPageInfo(pageId, onSuccess = { page ->
+                navController.navigate("Page/${page.pageId}?title=${page.title}&theme=${page.theme}")
+            }, onError = {
+                Toast.makeText(context, "해당 페이지를 찾을 수 없습니다", Toast.LENGTH_SHORT).show()
+            })
+
 
                          },
             modifier = Modifier.fillMaxWidth()

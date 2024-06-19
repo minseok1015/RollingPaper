@@ -72,7 +72,6 @@ import com.example.rollingpaper.KakaoAuthViewModel
 import com.example.rollingpaper.MainScreen
 import com.example.rollingpaper.Memo
 import com.example.rollingpaper.MemoViewModel
-import com.example.rollingpaper.Routes
 import com.example.rollingpaper.StickerViewModel
 import com.example.rollingpaper.component.Colors
 import com.example.rollingpaper.component.FontColors
@@ -129,7 +128,12 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
                         .padding(16.dp)
                 ) {
                     FloatingActionButton(
-                        onClick = { navController.navigate(Routes.Memo.route) },
+                        onClick = {
+                            pageId?.let {
+                                val route = "Memo/$it?title=$title&theme=$theme"
+                                navController.navigate(route)
+                            }
+                        },
                         containerColor = Color.Black,
                         contentColor = Color.White,
                         shape = CircleShape
