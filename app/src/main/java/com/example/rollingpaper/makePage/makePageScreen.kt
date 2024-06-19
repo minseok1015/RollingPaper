@@ -1,3 +1,4 @@
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,14 +28,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.rollingpaper.Page
+import com.example.rollingpaper.Repository
 import com.example.rollingpaper.Routes
+import com.google.firebase.Firebase
+import com.google.firebase.database.database
 import java.util.UUID
 
 @Composable
-fun makePage(navController: NavController) {
+fun makePage(navController: NavController,pageViewModel: PageViewModel = viewModel(factory = PageViewModelFactory(
+    Repository(Firebase.database.getReference("/Pages"))
+))) {
     var selectedTheme by remember { mutableStateOf(1) }
     var titleText by remember { mutableStateOf("") }
+
 
     Column(
         modifier = Modifier
@@ -73,6 +82,8 @@ fun makePage(navController: NavController) {
             }
             OutlinedButton(onClick = {
                 val pageId = generatePageId()
+                val newPage = Page(pageId = pageId, theme = selectedTheme, title = titleText)
+                pageViewModel.insertPage(newPage)
                 navController.navigate("Memo/${pageId}?title=${titleText}&theme=${selectedTheme}")
             }) {
                 Text("페이지 생성", fontWeight = FontWeight.Bold)

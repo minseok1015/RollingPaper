@@ -1,3 +1,3 @@
 package com.example.rollingpaper
 
-data class Page(var pageId:Int,var theme:Int,var title:String)
+data class Page(var pageId:String,var theme:Int,var title:String)

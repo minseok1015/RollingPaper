@@ -13,6 +13,11 @@ class Repository(private val table: DatabaseReference) {
         table.child(memo.memoId.toString()).setValue(memo)
     }
 
+
+    suspend fun insertPage(page: Page) {
+        table.child(page.pageId).setValue(page)
+    }
+
     fun getAllMemos(): Flow<List<Memo>> = callbackFlow{
         val listner= object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
