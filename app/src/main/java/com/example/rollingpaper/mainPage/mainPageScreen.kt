@@ -120,7 +120,7 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
         scrimColor = Color.Black.copy(alpha = 0.32f) // 스크림 색상 설정
     ) {
         Scaffold(
-            topBar = { TopBar(onMenuClick = { scope.launch { drawerState.open() } }, kakaoAuthViewModel) },
+            topBar = { TopBar(onMenuClick = { scope.launch { drawerState.open() } }, kakaoAuthViewModel, pageId) },
             floatingActionButton = {
                 Column(
                     horizontalAlignment = Alignment.End,
@@ -265,13 +265,13 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(onMenuClick: () -> Unit, viewModel: KakaoAuthViewModel) {
+fun TopBar(onMenuClick: () -> Unit, viewModel: KakaoAuthViewModel, pageId: String?) {
     TopAppBar(
         title = { Text("To. 미니", fontSize = 20.sp) },
         navigationIcon = {
             IconButton(onClick = {
                 // 공유하기 로직
-                viewModel.openPicker()
+                viewModel.openPicker(pageId)
             }) {
                 Icon(
                     imageVector = Icons.Default.Favorite,

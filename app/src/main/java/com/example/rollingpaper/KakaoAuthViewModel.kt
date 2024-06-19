@@ -20,6 +20,8 @@ import com.kakao.sdk.friend.model.PickerOrientation
 import com.kakao.sdk.friend.model.ViewAppearance
 import com.kakao.sdk.share.ShareClient
 import com.kakao.sdk.share.WebSharerClient
+import com.kakao.sdk.talk.TalkApiClient
+import com.kakao.sdk.talk.model.Friend
 import com.kakao.sdk.template.model.Button
 import com.kakao.sdk.template.model.Content
 import com.kakao.sdk.template.model.FeedTemplate
@@ -36,7 +38,6 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
 
         const val TAG = "KakaoAuthViewModel"
     }
-
 
 
     private val sharedPreferences: SharedPreferences =
@@ -103,7 +104,8 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
         Log.i(TAG, "토큰 불러오기: accessToken=$accessToken, refreshToken=$refreshToken")
 
         return if (accessToken != null && refreshToken != null &&
-            accessTokenExpiresAtMillis != -1L && refreshTokenExpiresAtMillis != -1L) {
+            accessTokenExpiresAtMillis != -1L && refreshTokenExpiresAtMillis != -1L
+        ) {
             OAuthToken(
                 accessToken = accessToken,
                 refreshToken = refreshToken,
@@ -141,7 +143,10 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
                                 Log.i(TAG, "회원번호: ${user.id}")
                                 Log.i(TAG, "이메일: ${user.kakaoAccount?.email}")
                                 Log.i(TAG, "닉네임: ${user.kakaoAccount?.profile?.nickname}")
-                                Log.i(TAG, "프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}")
+                                Log.i(
+                                    TAG,
+                                    "프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}"
+                                )
                             }
                         }
                     }
@@ -182,7 +187,7 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     // 공유 함수
-    fun shareContent(context: Context,title: String, description: String, imageUrl: String, webUrl: String) {
+    fun shareContent() {
         // 피드 메시지 보내기
         val defaultFeed = FeedTemplate(
             content = Content(
@@ -276,64 +281,128 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     val openPickerFriendRequestParams = OpenPickerFriendRequestParams(
-        title = "풀 스크린 멀티 친구 피커", //default "친구 선택"
+        title = "Rolling Paper 공유하기", //default "친구 선택"
         viewAppearance = ViewAppearance.AUTO, //default ViewAppearance.AUTO
         orientation = PickerOrientation.AUTO, //default PickerOrientation.AUTO
         enableSearch = true, //default true
         enableIndex = true, //default true
         showMyProfile = true, //default true
         showFavorite = true, //default true
-        showPickedFriend = null, // default true
-        maxPickableCount = null, // default 30
-        minPickableCount = null // default 1
+        showPickedFriend = true, // default true
+        maxPickableCount = 30, // default 30
+        minPickableCount = 1 // default 1
     )
 
-    fun openPicker(){
+    fun openPicker(pageId: String?){
         // 피커 호출
-        PickerClient.instance.selectFriend(
-            context = context!!,
+        PickerClient.instance.selectFriends(
+            context = context,
             params = openPickerFriendRequestParams
         ) { selectedUsers, error ->
             if (error != null) {
                 Log.e(KakaoAuthViewModel.TAG, "친구 선택 실패", error)
             } else {
                 Log.d(KakaoAuthViewModel.TAG, "친구 선택 성공 $selectedUsers")
+                val friendsName = selectedUsers?.users?.firstOrNull()?.profileNickname
+                sendMessagesToFriends(friendsName, pageId)
             }
         }
     }
-//    fun sendMessagesToFriends(friendIds: List<Long>) {
-//        val context = getApplication<Application>().applicationContext
-//        val message = "안녕하세요! 이 메시지는 자동으로 전송된 것입니다."
-//
-//        for (friendId in friendIds) {
-//            TalkApiClient.instance.sendDefaultMessage(
-//                receiverUuids = listOf(friendId.toString()),
-//                templateId = YOUR_TEMPLATE_ID, // 템플릿 ID를 여기에 입력하세요
-//                templateArgs = mapOf("KEY" to "VALUE") // 템플릿에 필요한 인자들을 여기에 입력하세요
-//            ) { result, error ->
-//                if (error != null) {
-//                    Log.e(TAG, "메시지 전송 실패: $friendId", error)
-//                } else {
-//                    Log.i(TAG, "메시지 전송 성공: $friendId")
-//                }
-//            }
-//        }
-//    }
 
-}
+    fun getKakaoFriends(callback: (friends: List<Friend>?, error: Throwable?) -> Unit) {
+        TalkApiClient.instance.friends { friends, error ->
+            if (error != null) {
+                callback(null, error)
+            } else {
+                callback(friends?.elements, null)
+            }
+        }
+    }
+    private val _selectedFriends = MutableLiveData<List<String>>()
+//템플릿
 
-// 이벤트를 처리하기 위한 헬퍼 클래스
-open class Event<out T>(private val content: T) {
-    private var hasBeenHandled = false
 
-    fun getContentIfNotHandled(): T? {
-        return if (hasBeenHandled) {
-            null
-        } else {
-            hasBeenHandled = true
-            content
+    fun sendMessagesToFriends(friendName: String?, pageId: String?) {
+        getKakaoFriends { friends, error ->
+            if (error != null) {
+                Log.e("KakaoAuthViewModel", "친구 목록 가져오기 실패", error)
+            } else if (friends != null) {
+                val templateId = 108876 // 여기에 Kakao Developer에서 생성한 템플릿 ID를 입력하세요
+                val message = "안녕하세요! 이 메시지는 자동으로 전송된 것입니다."
+
+                for (friend in friends) {
+                    val receiverUuid = friend.uuid
+                    val templateArgs =
+                        mapOf("name" to friend.profileNickname!!) // profileNickname이 null이 아님이 보장되는 경우
+
+                    // DefaultTemplate 객체를 생성하여 템플릿 ID와 인자들을 설정합니다.
+//                    val template = defaultFeed
+                    var defaultFeed = FeedTemplate(
+                        content = Content(
+                            title = "Rolling Paper",
+                            description = friendName +"님을 초대합니다.\n초대코드 : " + pageId,
+                            imageUrl = "https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png",
+                            link = Link(
+                                webUrl = "https://developers.kakao.com",
+                                mobileWebUrl = "https://developers.kakao.com"
+                            )
+                        ),
+                        social = Social(
+                            likeCount = 286,
+                            commentCount = 45,
+                            sharedCount = 845
+                        ),
+                        buttons = listOf(
+                            Button(
+                                "View on Web",
+                                Link(
+                                    webUrl = "https://developers.kakao.com",
+                                    mobileWebUrl = "https://developers.kakao.com"
+                                )
+                            ),
+                            Button(
+                                "View on App",
+                                Link(
+                                    androidExecutionParams = mapOf("key1" to "value1", "key2" to "value2"),
+                                    iosExecutionParams = mapOf("key1" to "value1", "key2" to "value2")
+                                )
+                            )
+                        )
+                    )
+                    val template = defaultFeed
+                    // 메시지 API를 사용하여 메시지를 보냅니다.
+                    TalkApiClient.instance.sendDefaultMessage(
+                        receiverUuids = listOf(receiverUuid),
+                        template = template
+                    ) { result, error ->
+                        if (error != null) {
+                            Log.e(
+                                "KakaoAuthViewModel",
+                                "메시지 전송 실패: ${friend.profileNickname}",
+                                error
+                            )
+                        } else {
+                            Log.i("KakaoAuthViewModel", "메시지 전송 성공: ${friend.profileNickname}")
+                        }
+                    }
+                }
+            }
         }
     }
 
-    fun peekContent(): T = content
+    // 이벤트를 처리하기 위한 헬퍼 클래스
+    open class Event<out T>(private val content: T) {
+        private var hasBeenHandled = false
+
+        fun getContentIfNotHandled(): T? {
+            return if (hasBeenHandled) {
+                null
+            } else {
+                hasBeenHandled = true
+                content
+            }
+        }
+
+        fun peekContent(): T = content
+    }
 }

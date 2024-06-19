@@ -61,6 +61,7 @@ fun makePage(navController: NavController,pageViewModel: PageViewModel = viewMod
             maxLines = 1
         )
 
+
         Spacer(modifier = Modifier.height(24.dp))
 
         Text("테마 선택", fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 8.dp))
