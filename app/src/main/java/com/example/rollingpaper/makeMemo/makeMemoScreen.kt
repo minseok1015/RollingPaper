@@ -1,6 +1,8 @@
 package com.example.rollingpaper.makeMemo
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +21,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -46,8 +49,7 @@ import com.example.rollingpaper.R
 import com.example.rollingpaper.Routes
 
 @Composable
-fun makeMemoScreen(pageId: String, navController: NavController,kakaoAuthViewModel: KakaoAuthViewModel,memoModel: MemoViewModel) {
-
+fun makeMemoScreen(pageId: String, navController: NavController, kakaoAuthViewModel: KakaoAuthViewModel, memoModel: MemoViewModel) {
 
     val context = kakaoAuthViewModel.context
 
@@ -161,8 +163,8 @@ fun makeMemoScreen(pageId: String, navController: NavController,kakaoAuthViewMod
                     text = "익명으로 작성하기",
                     modifier = Modifier.weight(1f),
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                    ,color = Color.Black
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
                 )
                 Switch(
                     checked = anonymous,
@@ -180,8 +182,8 @@ fun makeMemoScreen(pageId: String, navController: NavController,kakaoAuthViewMod
                     Text(
                         text = "From. ",
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
-                        ,color = Color.Black
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
                     )
                     BasicTextField(
                         value = author,
@@ -274,114 +276,94 @@ fun makeMemoScreen(pageId: String, navController: NavController,kakaoAuthViewMod
             )
         }
         Button(onClick = {
-//            kakaoAuthViewModel.shareContent(
-//            context = context
-//            ,"Dd"
-//            ,""
-//            ,""
-//            ,"https://example.com/callback/"
-//
-//        )
-
-            memoModel.insertMemo(pageId,Memo(1,"데이터베이스 삽입테스트","민석",14,1,2,14,14,1))
-            navController.navigate(Routes.Page.route)
-
-                         },
-            modifier = Modifier.fillMaxWidth()
-                , colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Black
-                    )
-        ) {
-            Text("확인", color = Color.White)
+            val memo = Memo(
+                context = context,
+                author = if (anonymous) "익명" else author,
+                content = text,
+                color = textColor.value.toString(),
+                alignment = textAlign.name,
+                font = selectedFont,
+                pageId = pageId
+            )
+            memoModel.addMemo(memo)
+            navController.navigate(Routes.MAIN)
+        }) {
+            Text(text = "추가")
         }
-
-//        Button(onClick = {kakaoAuthViewModel.selectFriends()  },
-//            modifier = Modifier.fillMaxWidth()
-//            , colors = ButtonDefaults.buttonColors(
-//                containerColor = Color.Black
-//            )
-//        ) {
-//            Text("친구선택", color = Color.White)
-//        }
-
     }
 }
 
 @Composable
 fun FontSizeDialog(fontSize: TextUnit, onDismiss: () -> Unit, onConfirm: (TextUnit) -> Unit) {
-    var newSize by remember { mutableStateOf(fontSize) }
+    var sliderPosition by remember { mutableStateOf(fontSize.value) }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("글씨 크기 변경") },
+        title = { Text(text = "글씨 크기 설정") },
         text = {
             Column {
                 Slider(
-                    value = newSize.value,
-                    onValueChange = { newSize = it.sp },
-                    valueRange = 8f..32f
+                    value = sliderPosition,
+                    onValueChange = { sliderPosition = it },
+                    valueRange = 8f..48f,
+                    steps = 40,
+                    onValueChangeFinished = { }
                 )
-                Text("크기: ${newSize.value.toInt()}sp")
+                Text(text = "크기: ${sliderPosition.toInt()}")
             }
         },
         confirmButton = {
-            Button(onClick = { onConfirm(newSize) }) {
-                Text("확인")
+            Button(onClick = { onConfirm(sliderPosition.sp) }) {
+                Text(text = "확인")
             }
         },
         dismissButton = {
             Button(onClick = onDismiss) {
-                Text("취소")
+                Text(text = "취소")
             }
         }
     )
 }
 
 @Composable
-fun TextAlignDialog(
-    textAlign: TextAlign,
-    onDismiss: () -> Unit,
-    onConfirm: (TextAlign) -> Unit
-) {
-    var newAlign by remember { mutableStateOf(textAlign) }
+fun TextAlignDialog(textAlign: TextAlign, onDismiss: () -> Unit, onConfirm: (TextAlign) -> Unit) {
+    var selectedTextAlign by remember { mutableStateOf(textAlign) }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("글씨 정렬 변경") },
+        title = { Text(text = "텍스트 정렬 설정") },
         text = {
             Column {
-                Button(
-                    onClick = { newAlign = TextAlign.Start },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                ) {
-                    Text("왼쪽 정렬")
-                }
-                Button(
-                    onClick = { newAlign = TextAlign.Center },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                ) {
-                    Text("가운데 정렬")
-                }
-                Button(
-                    onClick = { newAlign = TextAlign.End },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                ) {
-                    Text("오른쪽 정렬")
+                listOf(TextAlign.Start, TextAlign.Center, TextAlign.End).forEach { align ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .background(
+                                color = if (selectedTextAlign == align) Color.Gray else Color.Transparent,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(8.dp)
+                    ) {
+                        RadioButton(
+                            selected = selectedTextAlign == align,
+                            onClick = { selectedTextAlign = align }
+                        )
+                        Text(
+                            text = align.name,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
                 }
             }
         },
         confirmButton = {
-            Button(onClick = { onConfirm(newAlign) }) {
-                Text("확인")
+            Button(onClick = { onConfirm(selectedTextAlign) }) {
+                Text(text = "확인")
             }
         },
         dismissButton = {
             Button(onClick = onDismiss) {
-                Text("취소")
+                Text(text = "취소")
             }
         }
     )
@@ -389,43 +371,44 @@ fun TextAlignDialog(
 
 @Composable
 fun ColorDialog(textColor: Color, onDismiss: () -> Unit, onConfirm: (Color) -> Unit) {
-    var newColor by remember { mutableStateOf(textColor) }
+    var selectedColor by remember { mutableStateOf(textColor) }
+    val colors = listOf(Color.Black, Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Gray)
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("글씨 색상 변경") },
+        title = { Text(text = "글씨 색상 설정") },
         text = {
             Column {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    val colors = listOf(Color.Red, Color.Magenta, Color.Yellow, Color.Green, Color.Blue, Color.Black)
                     colors.forEach { color ->
-                        Button(
-                            onClick = { newColor = color },
-                            colors = ButtonDefaults.buttonColors(containerColor = color),
-                            modifier = Modifier.size(40.dp)
-                        ) {}
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .border(
+                                    width = 2.dp,
+                                    color = if (selectedColor == color) Color.Black else Color.Transparent,
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                                .background(color = color)
+                                .padding(4.dp)
+                                .background(color = color, shape = RoundedCornerShape(4.dp))
+                                .clickable { selectedColor = color }
+                        )
                     }
                 }
             }
         },
         confirmButton = {
-            Button(onClick = { onConfirm(newColor) }) {
-                Text("확인")
+            Button(onClick = { onConfirm(selectedColor) }) {
+                Text(text = "확인")
             }
         },
         dismissButton = {
             Button(onClick = onDismiss) {
-                Text("취소")
+                Text(text = "취소")
             }
         }
     )
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun MakeMemoScreenPreview(kakaoAuthViewModel: KakaoAuthViewModel) {
-//    val navController = rememberNavController()
-//    makeMemoScreen(navController, kakaoAuthViewModel)
-//}
