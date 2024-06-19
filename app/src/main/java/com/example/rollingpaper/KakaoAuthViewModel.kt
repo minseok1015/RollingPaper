@@ -1,5 +1,6 @@
 package com.example.rollingpaper
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -181,7 +182,7 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
                 }
             }
         } else {
-            UserApiClient.instance.loginWithKakaoAccount(context, callback = kakaoCallback)
+            UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
         }
     }
 
