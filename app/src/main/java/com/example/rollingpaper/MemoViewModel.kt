@@ -50,5 +50,11 @@ class MemoViewModel(private val application: Application, private val repository
             }
         }
     }
+
+    fun increaseLike(pageId: String, memoId: Int) {
+        viewModelScope.launch {
+            repository.increaseLike(pageId, memoId)
+        }
+    }
 }
 

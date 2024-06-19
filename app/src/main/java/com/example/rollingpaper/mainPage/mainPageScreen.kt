@@ -196,8 +196,8 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 for (item in rowItems) {
-                                    MemoItem(MemoContents = item, modifier = Modifier.weight(1f)) {
-                                        // onClick 핸들러
+                                    if (pageId != null) {
+                                        MemoItem(MemoContents = item, modifier = Modifier.weight(1f),memoModel,pageId)
                                     }
                                 }
                                 if (rowItems.size < 2) {
@@ -317,7 +317,7 @@ fun TopBar(onMenuClick: () -> Unit, viewModel: KakaoAuthViewModel, pageId: Strin
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun MemoItem(MemoContents: Memo, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    fun MemoItem(MemoContents: Memo, modifier: Modifier = Modifier, memoModel:MemoViewModel,pageId:String) {
         val rotationAngle = Random.nextFloat() * 10 - 5 // -5도에서 5도 사이의 랜덤 각도
         var likes by remember { mutableStateOf(MemoContents.like) }
 
@@ -365,7 +365,10 @@ fun TopBar(onMenuClick: () -> Unit, viewModel: KakaoAuthViewModel, pageId: Strin
                         Icons.Default.Favorite,
                         contentDescription = null,
                         tint = Color.Red,
-                        modifier = Modifier.clickable { likes++ }
+                        modifier = Modifier.clickable {
+                            likes++
+                            memoModel.increaseLike(pageId, MemoContents.memoId)
+                        }
                     )
                 }
             }
