@@ -21,7 +21,7 @@ sealed class Routes(val route: String) {
 }
 
 @Composable
-fun Graph(navController: NavHostController, kakaoAuthViewModel: KakaoAuthViewModel = viewModel()) {
+fun Graph(navController: NavHostController, stickerViewModel: StickerViewModel, kakaoAuthViewModel: KakaoAuthViewModel = viewModel()) {
     val isLoggedIn by kakaoAuthViewModel.isLoggedIn.observeAsState(initial = false)
     val loginEvent by kakaoAuthViewModel.loginEvent.observeAsState()
 
@@ -45,7 +45,7 @@ fun Graph(navController: NavHostController, kakaoAuthViewModel: KakaoAuthViewMod
             }
         }
         composable(route = Routes.Page.route) {
-            MainPageScreen(navController)
+            MainPageScreen(navController, stickerViewModel ,kakaoAuthViewModel)
         }
         composable(route = Routes.Memo.route) {
             makeMemoScreen(navController,kakaoAuthViewModel)

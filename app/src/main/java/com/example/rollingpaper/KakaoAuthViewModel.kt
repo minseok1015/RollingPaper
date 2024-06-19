@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -21,6 +20,7 @@ import com.kakao.sdk.friend.model.PickerOrientation
 import com.kakao.sdk.friend.model.ViewAppearance
 import com.kakao.sdk.share.ShareClient
 import com.kakao.sdk.share.WebSharerClient
+import com.kakao.sdk.talk.TalkApiClient
 import com.kakao.sdk.template.model.Button
 import com.kakao.sdk.template.model.Content
 import com.kakao.sdk.template.model.FeedTemplate
@@ -34,6 +34,7 @@ import java.util.Date
 @SuppressLint("StaticFieldLeak")
 class KakaoAuthViewModel(application: Application) : AndroidViewModel(application) {
     companion object {
+
         const val TAG = "KakaoAuthViewModel"
     }
 
@@ -275,33 +276,51 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
+    val openPickerFriendRequestParams = OpenPickerFriendRequestParams(
+        title = "풀 스크린 멀티 친구 피커", //default "친구 선택"
+        viewAppearance = ViewAppearance.AUTO, //default ViewAppearance.AUTO
+        orientation = PickerOrientation.AUTO, //default PickerOrientation.AUTO
+        enableSearch = true, //default true
+        enableIndex = true, //default true
+        showMyProfile = true, //default true
+        showFavorite = true, //default true
+        showPickedFriend = null, // default true
+        maxPickableCount = null, // default 30
+        minPickableCount = null // default 1
+    )
 
-    // 친구 목록 가져오기, 친구 선택하기
-//    fun selectFriends() {
-//        val openPickerFriendRequestParams = OpenPickerFriendRequestParams(
-//            title = "풀 스크린 멀티 친구 피커", //default "친구 선택"
-//            viewAppearance = ViewAppearance.AUTO, //default ViewAppearance.AUTO
-//            orientation = PickerOrientation.AUTO, //default PickerOrientation.AUTO
-//            enableSearch = true, //default true
-//            enableIndex = true, //default true
-//            showMyProfile = true, //default true
-//            showFavorite = true, //default true
-//            showPickedFriend = null, // default true
-//            maxPickableCount = null, // default 30
-//            minPickableCount = null // default 1
-//        )
-//
-//        PickerClient.instance.selectFriends(
-//            context = context!!,
-//            params = openPickerFriendRequestParams
-//        ) { selectedUsers, error ->
-//            if (error != null) {
-//                Log.e(TAG, "친구 선택 실패", error)
-//            } else {
-//                Log.d(TAG, "친구 선택 성공 $selectedUsers")
-//            }
-//        }
-//    }
+    fun openPicker(){
+        // 피커 호출
+        PickerClient.instance.selectFriend(
+            context = context!!,
+            params = openPickerFriendRequestParams
+        ) { selectedUsers, error ->
+            if (error != null) {
+                Log.e(KakaoAuthViewModel.TAG, "친구 선택 실패", error)
+            } else {
+                Log.d(KakaoAuthViewModel.TAG, "친구 선택 성공 $selectedUsers")
+            }
+        }
+    }
+    fun sendMessagesToFriends(friendIds: List<Long>) {
+        val context = getApplication<Application>().applicationContext
+        val message = "안녕하세요! 이 메시지는 자동으로 전송된 것입니다."
+
+        for (friendId in friendIds) {
+            TalkApiClient.instance.sendDefaultMessage(
+                receiverUuids = listOf(friendId.toString()),
+                templateId = YOUR_TEMPLATE_ID, // 템플릿 ID를 여기에 입력하세요
+                templateArgs = mapOf("KEY" to "VALUE") // 템플릿에 필요한 인자들을 여기에 입력하세요
+            ) { result, error ->
+                if (error != null) {
+                    Log.e(TAG, "메시지 전송 실패: $friendId", error)
+                } else {
+                    Log.i(TAG, "메시지 전송 성공: $friendId")
+                }
+            }
+        }
+    }
+
 }
 
 // 이벤트를 처리하기 위한 헬퍼 클래스

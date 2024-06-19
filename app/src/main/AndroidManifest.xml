@@ -23,7 +23,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RollingPaper"
-        tools:targetApi="31">
+        tools:targetApi="34">
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="be4367df57d1b4431763aef17ad9467d"/>

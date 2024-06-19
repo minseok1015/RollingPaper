@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.rollingpaper.KakaoAuthViewModel
 import com.example.rollingpaper.MainScreen
 import com.example.rollingpaper.Memo
 import com.example.rollingpaper.MemoViewModel
@@ -63,9 +64,10 @@ import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainPageScreen(navController: NavController,stickerViewModel: StickerViewModel = viewModel()) {
+fun MainPageScreen(navController: NavController,stickerViewModel: StickerViewModel = viewModel(), KakaoAuthViewModel: KakaoAuthViewModel) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val context = KakaoAuthViewModel.context
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -82,7 +84,7 @@ fun MainPageScreen(navController: NavController,stickerViewModel: StickerViewMod
         scrimColor = Color.Black.copy(alpha = 0.32f) // 스크림 색상 설정
     ) {
         Scaffold(
-            topBar = { TopBar(onMenuClick = { scope.launch { drawerState.open() } }) },
+            topBar = { TopBar(onMenuClick = { scope.launch { drawerState.open() } }, KakaoAuthViewModel) },
             floatingActionButton = {
                 Column(
                     horizontalAlignment = Alignment.End,
@@ -149,11 +151,14 @@ fun MainPageScreen(navController: NavController,stickerViewModel: StickerViewMod
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(onMenuClick: () -> Unit) {
+fun TopBar(onMenuClick: () -> Unit, viewModel: KakaoAuthViewModel) {
     TopAppBar(
         title = { Text("To. 미니", fontSize = 20.sp) },
         navigationIcon = {
-            IconButton(onClick = { /* 공유하기 로직 */ }) {
+            IconButton(onClick = {
+                // 공유하기 로직
+                viewModel.openPicker()
+            }) {
                 Icon(
                     imageVector = Icons.Default.Favorite,
                     contentDescription = "Share"
@@ -175,6 +180,7 @@ fun TopBar(onMenuClick: () -> Unit) {
         )
     )
 }
+
 
 @Composable
 fun DrawerContent() {
