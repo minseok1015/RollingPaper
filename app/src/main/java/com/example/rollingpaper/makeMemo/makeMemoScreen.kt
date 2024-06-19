@@ -43,6 +43,8 @@ import com.example.rollingpaper.KakaoAuthViewModel
 import com.example.rollingpaper.Memo
 import com.example.rollingpaper.MemoViewModel
 import com.example.rollingpaper.R
+import com.example.rollingpaper.Routes
+
 @Composable
 fun makeMemoScreen(pageId: String, navController: NavController,kakaoAuthViewModel: KakaoAuthViewModel,memoModel: MemoViewModel) {
 
@@ -282,6 +284,7 @@ fun makeMemoScreen(pageId: String, navController: NavController,kakaoAuthViewMod
 //        )
 
             memoModel.insertMemo(pageId,Memo(1,"데이터베이스 삽입테스트","민석",14,1,2,14,14,1))
+            navController.navigate(Routes.Page.route)
 
                          },
             modifier = Modifier.fillMaxWidth()

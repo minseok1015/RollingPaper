@@ -1,7 +1,5 @@
 package com.example.rollingpaper
 
-import PageViewModel
-import PageViewModelFactory
 import android.app.Application
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -11,7 +9,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.rollingpaper.EnterPage.EnterPageScreen
+import com.example.rollingpaper.checkPage.checkPage
 import com.example.rollingpaper.homePage.homeScreen
 import com.example.rollingpaper.homePage.homeScreen_no
 import com.example.rollingpaper.mainPage.MainPageScreen
@@ -59,12 +57,7 @@ fun Graph(navController: NavHostController, kakaoAuthViewModel: KakaoAuthViewMod
                 homeScreen_no(viewModel = kakaoAuthViewModel, navController = navController)
             }
         }
-        composable(route = Routes.Page.route) {backStackEntry ->
-            val pageId = backStackEntry.arguments?.getString("pageId")
-            val title = backStackEntry.arguments?.getString("title")
-            val theme = backStackEntry.arguments?.getString("theme")?.toIntOrNull()
-            MainPageScreen(pageId=pageId,title=title,theme= theme, navController= navController,memoModel= memoModel ,kakaoAuthViewModel= kakaoAuthViewModel)
-        }
+
         composable(route = Routes.Page.route) {backStackEntry ->
             val pageId = backStackEntry.arguments?.getString("pageId")
             val title = backStackEntry.arguments?.getString("title")
@@ -81,7 +74,7 @@ fun Graph(navController: NavHostController, kakaoAuthViewModel: KakaoAuthViewMod
             makePage(navController)
         }
         composable(route=Routes.EnterPage.route){
-            EnterPageScreen(navController,memoModel)
+            checkPage(navController,memoModel)
         }
     }
 }
