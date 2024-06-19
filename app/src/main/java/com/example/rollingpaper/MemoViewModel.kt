@@ -38,7 +38,7 @@ class MemoViewModel(private val application: Application, private val repository
 
     fun insertMemo(pageId: String, memo: Memo) {
         viewModelScope.launch {
-            repository.insertMemo(pageId, memo)
+            repository.insertMemo(pageId, memo,currentMemoId)
         }
     }
 
