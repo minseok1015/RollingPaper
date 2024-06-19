@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import com.example.rollingpaper.homePage.homeScreen
 import com.example.rollingpaper.homePage.homeScreen_no
 import com.example.rollingpaper.mainPage.MainPageScreen
+import com.example.rollingpaper.makeMemo.makeMemoScreen
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import makePage
@@ -54,14 +55,18 @@ fun Graph(navController: NavHostController, kakaoAuthViewModel: KakaoAuthViewMod
             }
         }
         composable(route = Routes.Page.route) {
+//            val pageId = backStackEntry.arguments?.getString("pageId")
+//            val title = backStackEntry.arguments?.getString("title")
+//            val theme = backStackEntry.arguments?.getString("theme")?.toIntOrNull()
             MainPageScreen("0000000000", "기본", 1, navController= navController,memoModel= memoModel ,kakaoAuthViewModel= kakaoAuthViewModel)
         }
         composable(route = Routes.Memo.route) { backStackEntry ->
             val pageId = backStackEntry.arguments?.getString("pageId")
             val title = backStackEntry.arguments?.getString("title")
             val theme = backStackEntry.arguments?.getString("theme")?.toIntOrNull()
-            MainPageScreen(pageId = pageId, title = title, theme = theme, navController = navController, memoModel, kakaoAuthViewModel = kakaoAuthViewModel)
+            makeMemoScreen(pageId = pageId, navController = navController,kakaoAuthViewModel= kakaoAuthViewModel)
         }
+
         composable(route = Routes.MakePage.route) {
             makePage(navController)
         }
