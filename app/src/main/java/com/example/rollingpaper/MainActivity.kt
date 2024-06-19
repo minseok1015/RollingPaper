@@ -17,7 +17,6 @@ import com.kakao.sdk.common.util.Utility
 class MainActivity : ComponentActivity() {
 
     private val kakaoAuthViewModel: KakaoAuthViewModel by viewModels()
-    private val stickerViewModel : StickerViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -47,7 +46,7 @@ class MainActivity : ComponentActivity() {
                     Log.d("Hash", keyHash)
                     kakaoAuthViewModel.checkLoginStatus()
                     val navcontroller= rememberNavController()
-                    Graph(navcontroller, stickerViewModel, kakaoAuthViewModel)
+                    Graph(navcontroller, kakaoAuthViewModel)
 
                         // 다른 destination 추가
                     }
@@ -56,5 +55,5 @@ class MainActivity : ComponentActivity() {
         }
 
     }
-}
+
 

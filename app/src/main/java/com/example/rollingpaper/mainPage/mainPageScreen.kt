@@ -62,17 +62,14 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.rollingpaper.KakaoAuthViewModel
+import com.example.rollingpaper.MainScreen
 import com.example.rollingpaper.Memo
 import com.example.rollingpaper.MemoViewModel
 import com.example.rollingpaper.Routes
@@ -85,7 +82,7 @@ import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: NavController, stickerViewModel: StickerViewModel = viewModel(), kakaoAuthViewModel: KakaoAuthViewModel) {
+fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: NavController, memoModel: MemoViewModel, stickerViewModel: StickerViewModel = viewModel(), kakaoAuthViewModel: KakaoAuthViewModel) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
 
     val scope = rememberCoroutineScope()
@@ -162,8 +159,8 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
                 Spacer(modifier = Modifier.height(16.dp))
                 Text("제목: $title", fontSize = 18.sp, fontWeight = FontWeight.Medium)
 
-                val memoModel = viewModel<MemoViewModel>()
-                val chunkedItems = memoModel.memoList.chunked(2)
+//                val memoModel = viewModel<MemoViewModel>()
+//                val chunkedItems = memoModel.memoList.chunked(2)
 
 
                 val listState = rememberLazyListState()
@@ -292,7 +289,7 @@ fun TopBar(onMenuClick: () -> Unit, viewModel: KakaoAuthViewModel) {
             containerColor = Color.White,
             titleContentColor = Color.Black,
             actionIconContentColor = Color.Black
-        )
+        ))
     }
 
     @Composable
