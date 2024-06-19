@@ -33,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
@@ -44,9 +43,12 @@ import com.example.rollingpaper.KakaoAuthViewModel
 import com.example.rollingpaper.Memo
 import com.example.rollingpaper.MemoViewModel
 import com.example.rollingpaper.R
-@Composable
-fun makeMemoScreen(pageId: String, navController: NavController,kakaoAuthViewModel: KakaoAuthViewModel,memoModel: MemoViewModel) {
+import com.example.rollingpaper.component.Colors
+import com.example.rollingpaper.component.FontColors
+import com.example.rollingpaper.component.Fonts
 
+@Composable
+fun makeMemoScreen(pageId: String, navController: NavController, kakaoAuthViewModel: KakaoAuthViewModel, memoModel: MemoViewModel) {
 
     val context = kakaoAuthViewModel.context
 
@@ -55,13 +57,14 @@ fun makeMemoScreen(pageId: String, navController: NavController,kakaoAuthViewMod
     var showFontSizeDialog by remember { mutableStateOf(false) }
     var showTextAlignDialog by remember { mutableStateOf(false) }
     var showColorDialog by remember { mutableStateOf(false) }
+    var showBackgroundColorDialog by remember { mutableStateOf(false) }
     var fontSize by remember { mutableStateOf(16.sp) }
     var textAlign by remember { mutableStateOf(TextAlign.Start) }
     var textColor by remember { mutableStateOf(Color.Black) }
+    var backgroundColor by remember { mutableStateOf(Color.White) }
     var author by remember { mutableStateOf("") }
 
-    val fontFamilies = listOf("굴림체", "궁서체", "바탕체", "고딕체")
-    var selectedFont by remember { mutableStateOf(fontFamilies[0]) }
+    var selectedFontIndex by remember { mutableStateOf(0) }
 
     if (showFontSizeDialog) {
         FontSizeDialog(fontSize = fontSize, onDismiss = { showFontSizeDialog = false }, onConfirm = { newSize ->
@@ -78,9 +81,16 @@ fun makeMemoScreen(pageId: String, navController: NavController,kakaoAuthViewMod
     }
 
     if (showColorDialog) {
-        ColorDialog(textColor = textColor, onDismiss = { showColorDialog = false }, onConfirm = { newColor ->
+        ColorDialog(textColor, onDismiss = { showColorDialog = false }, onConfirm = { newColor ->
             textColor = newColor
             showColorDialog = false
+        })
+    }
+
+    if (showBackgroundColorDialog) {
+        BackgroundColorDialog(backgroundColor, onDismiss = { showBackgroundColorDialog = false }, onConfirm = { newColor ->
+            backgroundColor = newColor
+            showBackgroundColorDialog = false
         })
     }
 
@@ -107,19 +117,13 @@ fun makeMemoScreen(pageId: String, navController: NavController,kakaoAuthViewMod
                     fontSize = fontSize,
                     textAlign = textAlign,
                     color = textColor,
-                    fontFamily = when (selectedFont) {
-                        "굴림체" -> FontFamily.Default
-                        "궁서체" -> FontFamily.Serif
-                        "바탕체" -> FontFamily.SansSerif
-                        "고딕체" -> FontFamily.Monospace
-                        else -> FontFamily.Default
-                    }
+                    fontFamily = Fonts.getFontByIndex(selectedFontIndex)
                 ),
                 decorationBox = { innerTextField ->
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(Color.White, shape = RoundedCornerShape(8.dp))
+                            .background(backgroundColor, shape = RoundedCornerShape(8.dp))
                             .padding(8.dp),
                         contentAlignment = when (textAlign) {
                             TextAlign.Center -> Alignment.Center
@@ -134,13 +138,7 @@ fun makeMemoScreen(pageId: String, navController: NavController,kakaoAuthViewMod
                                     fontSize = fontSize,
                                     textAlign = textAlign,
                                     color = textColor,
-                                    fontFamily = when (selectedFont) {
-                                        "굴림체" -> FontFamily.Default
-                                        "궁서체" -> FontFamily.Serif
-                                        "바탕체" -> FontFamily.SansSerif
-                                        "고딕체" -> FontFamily.Monospace
-                                        else -> FontFamily.Default
-                                    }
+                                    fontFamily = Fonts.getFontByIndex(selectedFontIndex)
                                 ),
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -160,8 +158,8 @@ fun makeMemoScreen(pageId: String, navController: NavController,kakaoAuthViewMod
                     text = "익명으로 작성하기",
                     modifier = Modifier.weight(1f),
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                    ,color = Color.Black
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
                 )
                 Switch(
                     checked = anonymous,
@@ -179,8 +177,8 @@ fun makeMemoScreen(pageId: String, navController: NavController,kakaoAuthViewMod
                     Text(
                         text = "From. ",
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
-                        ,color = Color.Black
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
                     )
                     BasicTextField(
                         value = author,
@@ -191,13 +189,7 @@ fun makeMemoScreen(pageId: String, navController: NavController,kakaoAuthViewMod
                         textStyle = TextStyle(
                             fontSize = fontSize,
                             color = textColor,
-                            fontFamily = when (selectedFont) {
-                                "굴림체" -> FontFamily.Default
-                                "궁서체" -> FontFamily.Serif
-                                "바탕체" -> FontFamily.SansSerif
-                                "고딕체" -> FontFamily.Monospace
-                                else -> FontFamily.Default
-                            }
+                            fontFamily = Fonts.getFontByIndex(selectedFontIndex)
                         ),
                         decorationBox = { innerTextField ->
                             Box(
@@ -213,13 +205,7 @@ fun makeMemoScreen(pageId: String, navController: NavController,kakaoAuthViewMod
                                         style = TextStyle(
                                             fontSize = fontSize,
                                             color = textColor,
-                                            fontFamily = when (selectedFont) {
-                                                "굴림체" -> FontFamily.Default
-                                                "궁서체" -> FontFamily.Serif
-                                                "바탕체" -> FontFamily.SansSerif
-                                                "고딕체" -> FontFamily.Monospace
-                                                else -> FontFamily.Default
-                                            }
+                                            fontFamily = Fonts.getFontByIndex(selectedFontIndex)
                                         ),
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -236,20 +222,19 @@ fun makeMemoScreen(pageId: String, navController: NavController,kakaoAuthViewMod
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                fontFamilies.forEach { font ->
+                Fonts.fontArray.forEachIndexed { index, font ->
                     Button(
-                        onClick = { selectedFont = font },
+                        onClick = { selectedFontIndex = index },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (selectedFont == font) Color.Gray else Color.LightGray
+                            containerColor = if (selectedFontIndex == index) Color.Gray else Color.LightGray
                         )
                     ) {
-                        Text(text = font)
+                        Text(text = font.name, fontFamily = font.font)
                     }
                 }
             }
         }
 
-        val memo = Memo(1,"데이터베이스 삽입테스트","민석",14,1,2,14,14,1)
         NavigationBar(
             containerColor = Color.LightGray,
             contentColor = Color.Black,
@@ -272,43 +257,40 @@ fun makeMemoScreen(pageId: String, navController: NavController,kakaoAuthViewMod
                 selected = false,
                 onClick = { showColorDialog = true }
             )
+            NavigationBarItem(
+                icon = { Icon(painter = painterResource(R.drawable.grr), contentDescription = "Background") },
+                selected = false,
+                onClick = { showBackgroundColorDialog = true }
+            )
         }
         Button(onClick = {
-//            kakaoAuthViewModel.shareContent(
-//            context = context
-//            ,"Dd"
-//            ,""
-//            ,""
-//            ,"https://example.com/callback/"
-//
-//        )
-
-            memoModel.insertMemo(pageId,Memo(2,"데이터베이스 삽입테스트","민석",14,1,2,14,14,1))
+            val newMemoId = memoModel.getNextMemoId()
+            memoModel.insertMemo(
+                pageId,
+                Memo(
+                    memoId = newMemoId,
+                    content = text,
+                    name = if (anonymous) "익명" else author,
+                    font = selectedFontIndex,
+                    fontSize = fontSize.value.toInt(),
+                    fontColor = FontColors.fontColorsArray.indexOfFirst { it.color == textColor },
+                    memoColor = Colors.colorsArray.indexOfFirst { it.color == backgroundColor },
+                    like = 0,
+                )
+            )
             memoModel.getPageInfo(pageId, onSuccess = { page ->
                 navController.navigate("Page/${page.pageId}?title=${page.title}&theme=${page.theme}")
             }, onError = {
                 Toast.makeText(context, "해당 페이지를 찾을 수 없습니다", Toast.LENGTH_SHORT).show()
             })
-
-
-                         },
-            modifier = Modifier.fillMaxWidth()
-                , colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Black
-                    )
+        },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Black
+            )
         ) {
             Text("확인", color = Color.White)
         }
-
-//        Button(onClick = {kakaoAuthViewModel.selectFriends()  },
-//            modifier = Modifier.fillMaxWidth()
-//            , colors = ButtonDefaults.buttonColors(
-//                containerColor = Color.Black
-//            )
-//        ) {
-//            Text("친구선택", color = Color.White)
-//        }
-
     }
 }
 
@@ -404,11 +386,11 @@ fun ColorDialog(textColor: Color, onDismiss: () -> Unit, onConfirm: (Color) -> U
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    val colors = listOf(Color.Red, Color.Magenta, Color.Yellow, Color.Green, Color.Blue, Color.Black)
-                    colors.forEach { color ->
+                    val colors = FontColors.fontColorsArray
+                    colors.forEachIndexed { index, colorObj ->
                         Button(
-                            onClick = { newColor = color },
-                            colors = ButtonDefaults.buttonColors(containerColor = color),
+                            onClick = { newColor = colorObj.color },
+                            colors = ButtonDefaults.buttonColors(containerColor = colorObj.color),
                             modifier = Modifier.size(40.dp)
                         ) {}
                     }
@@ -428,9 +410,38 @@ fun ColorDialog(textColor: Color, onDismiss: () -> Unit, onConfirm: (Color) -> U
     )
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun MakeMemoScreenPreview(kakaoAuthViewModel: KakaoAuthViewModel) {
-//    val navController = rememberNavController()
-//    makeMemoScreen(navController, kakaoAuthViewModel)
-//}
+@Composable
+fun BackgroundColorDialog(backgroundColor: Color, onDismiss: () -> Unit, onConfirm: (Color) -> Unit) {
+    var newColor by remember { mutableStateOf(backgroundColor) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("배경 색상 변경") },
+        text = {
+            Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    val colors = Colors.colorsArray
+                    colors.forEachIndexed { index, colorObj ->
+                        Button(
+                            onClick = { newColor = colorObj.color },
+                            colors = ButtonDefaults.buttonColors(containerColor = colorObj.color),
+                            modifier = Modifier.size(40.dp)
+                        ) {}
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(onClick = { onConfirm(newColor) }) {
+                Text("확인")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("취소")
+            }
+        }
+    )
+}

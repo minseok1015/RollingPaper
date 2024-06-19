@@ -38,6 +38,7 @@ class Repository(private val table: DatabaseReference) {
             table.child(pageId).child("memos").removeEventListener(listener)
         }
     }
+
     fun getPageInfo(pageId: String): Flow<Page?> = callbackFlow {
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {

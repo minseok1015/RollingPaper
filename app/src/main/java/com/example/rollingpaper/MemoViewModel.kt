@@ -20,6 +20,12 @@ class MemoViewModelFactory(private val application: Application, private val rep
 }
 
 class MemoViewModel(private val application: Application, private val repository: Repository) : AndroidViewModel(application) {
+    private var currentMemoId = 20
+
+    fun getNextMemoId(): Int {
+        currentMemoId++
+        return currentMemoId
+    }
 
     private var _memoList = MutableStateFlow<List<Memo>>(emptyList())
     val memoList = _memoList.asStateFlow()
