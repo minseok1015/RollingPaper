@@ -62,7 +62,6 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
@@ -119,7 +118,11 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
         scrimColor = Color.Black.copy(alpha = 0.32f) // 스크림 색상 설정
     ) {
         Scaffold(
-            topBar = { TopBar(onMenuClick = { scope.launch { drawerState.open() } }, kakaoAuthViewModel, pageId) },
+            topBar = { title?.let {
+                TopBar(onMenuClick = { scope.launch { drawerState.open() } }, kakaoAuthViewModel, pageId,
+                    it
+                )
+            } },
             floatingActionButton = {
                 Column(
                     horizontalAlignment = Alignment.End,
@@ -161,9 +164,8 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
                     .fillMaxSize()
                     .background(themeColor)
             ) {
-                Text("페이지 ID: $pageId", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+//                Text("페이지 ID: $pageId", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(16.dp))
-                Text("제목: $title", fontSize = 18.sp, fontWeight = FontWeight.Medium)
 
 //                val memoModel = viewModel<MemoViewModel>()
 //                val chunkedItems = memoModel.memoList.chunked(2)
@@ -269,9 +271,9 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(onMenuClick: () -> Unit, viewModel: KakaoAuthViewModel, pageId: String?) {
+fun TopBar(onMenuClick: () -> Unit, viewModel: KakaoAuthViewModel, pageId: String?, title:String) {
     TopAppBar(
-        title = { Text("To. 미니", fontSize = 20.sp) },
+        title = { Text("제목: $title", fontSize = 20.sp) },
         navigationIcon = {
             IconButton(onClick = {
                 // 공유하기 로직

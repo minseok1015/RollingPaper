@@ -10,7 +10,7 @@ data class Colors(
     companion object {
         // Compose Color 객체를 포함하는 배열을 정의합니다.
         val colorsArray = arrayOf(
-            Colors(name = "Black", color = Color(0xFF000000)), // Black
+            Colors(name = "White", color = Color(0xFFFFFFFF)), // White
             Colors(name = "Red", color = Color(0xFFFFB3BA)), // Pastel Red
             Colors(name = "Green", color = Color(0xFFB4E4B5)), // Pastel Green
             Colors(name = "Blue", color = Color(0xFFAEC6CF)), // Pastel Blue
