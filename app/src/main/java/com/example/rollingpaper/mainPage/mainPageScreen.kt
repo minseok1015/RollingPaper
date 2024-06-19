@@ -318,7 +318,7 @@ fun TopBar(onMenuClick: () -> Unit, viewModel: KakaoAuthViewModel, pageId: Strin
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun MemoItem(MemoContents: Memo, modifier: Modifier = Modifier, memoModel:MemoViewModel,pageId:String) {
-        val rotationAngle = Random.nextFloat() * 10 - 5 // -5도에서 5도 사이의 랜덤 각도
+        val rotationAngle by remember { mutableStateOf(Random.nextFloat() * 10 - 5) } // -5도에서 5도 사이의 랜덤 각도
         var likes by remember { mutableStateOf(MemoContents.like) }
 
         Box(modifier = modifier.padding(8.dp)) {
