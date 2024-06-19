@@ -41,9 +41,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.rollingpaper.KakaoAuthViewModel
 import com.example.rollingpaper.Memo
+import com.example.rollingpaper.MemoViewModel
 import com.example.rollingpaper.R
 @Composable
-fun makeMemoScreen(pageId: String?, navController: NavController,kakaoAuthViewModel: KakaoAuthViewModel) {
+fun makeMemoScreen(pageId: String, navController: NavController,kakaoAuthViewModel: KakaoAuthViewModel,memoModel: MemoViewModel) {
 
 
     val context = kakaoAuthViewModel.context
@@ -247,7 +248,6 @@ fun makeMemoScreen(pageId: String?, navController: NavController,kakaoAuthViewMo
             }
         }
 
-        val memo = Memo(1,"데이터베이스 삽입테스트","민석",14,1,2,14,14,1)
         NavigationBar(
             containerColor = Color.LightGray,
             contentColor = Color.Black,
@@ -271,13 +271,19 @@ fun makeMemoScreen(pageId: String?, navController: NavController,kakaoAuthViewMo
                 onClick = { showColorDialog = true }
             )
         }
-        Button(onClick = { kakaoAuthViewModel.shareContent(
-            context = context
-            ,"Dd"
-            ,""
-            ,""
-            ,"https://example.com/callback/"
-        ) },
+        Button(onClick = {
+//            kakaoAuthViewModel.shareContent(
+//            context = context
+//            ,"Dd"
+//            ,""
+//            ,""
+//            ,"https://example.com/callback/"
+//
+//        )
+
+            memoModel.insertMemo(pageId,Memo(1,"데이터베이스 삽입테스트","민석",14,1,2,14,14,1))
+
+                         },
             modifier = Modifier.fillMaxWidth()
                 , colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Black

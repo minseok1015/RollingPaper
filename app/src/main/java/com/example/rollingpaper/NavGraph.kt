@@ -20,7 +20,7 @@ import makePage
 sealed class Routes(val route: String) {
     object Home : Routes("Home")
     object Page : Routes("Page")
-    object Memo : Routes("Memo/{pageId}?title={title}&theme={theme}")
+    object Memo : Routes("Memo/{pageId}")
     object MakePage : Routes("MakePage")
 }
 
@@ -29,7 +29,7 @@ sealed class Routes(val route: String) {
 fun Graph(navController: NavHostController, kakaoAuthViewModel: KakaoAuthViewModel = viewModel()) {
     val isLoggedIn by kakaoAuthViewModel.isLoggedIn.observeAsState(initial = false)
     val loginEvent by kakaoAuthViewModel.loginEvent.observeAsState()
-    val table= Firebase.database.getReference("Pages/memos")
+    val table= Firebase.database.getReference("Pages")
     val application = LocalContext.current.applicationContext as Application
     val memoModel: MemoViewModel = viewModel(factory = MemoViewModelFactory(application, Repository(table)))
     val stickerViewModel: StickerViewModel = viewModel()
@@ -62,9 +62,7 @@ fun Graph(navController: NavHostController, kakaoAuthViewModel: KakaoAuthViewMod
         }
         composable(route = Routes.Memo.route) { backStackEntry ->
             val pageId = backStackEntry.arguments?.getString("pageId")
-            val title = backStackEntry.arguments?.getString("title")
-            val theme = backStackEntry.arguments?.getString("theme")?.toIntOrNull()
-            makeMemoScreen(pageId = pageId, navController = navController,kakaoAuthViewModel= kakaoAuthViewModel)
+            pageId?.let { makeMemoScreen(pageId = "c94a88d03c", navController = navController,memoModel= memoModel,kakaoAuthViewModel= kakaoAuthViewModel) }
         }
 
         composable(route = Routes.MakePage.route) {

@@ -10,32 +10,32 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 
-class MemoViewModelFactory(private val application: Application,private val repository: Repository): ViewModelProvider.Factory{
+class MemoViewModelFactory(private val application: Application, private val repository: Repository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MemoViewModel::class.java)) {
-            return MemoViewModel(application,repository) as T
+            return MemoViewModel(application, repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
 
-class MemoViewModel(private val application: Application,private val repository: Repository): AndroidViewModel(application) {
+class MemoViewModel(private val application: Application, private val repository: Repository) : AndroidViewModel(application) {
 
     private var _memoList = MutableStateFlow<List<Memo>>(emptyList())
     val memoList = _memoList.asStateFlow()
-    fun insertMemo(memo: Memo){
+
+    fun insertMemo(pageId: String, memo: Memo) {
         viewModelScope.launch {
-            repository.insertMemo(memo)
+            repository.insertMemo(pageId, memo)
         }
     }
 
-    fun getAllMemos(){
+    fun getAllMemos(pageId: String) {
         viewModelScope.launch {
-            repository.getAllMemos().collect{
-                _memoList.value=it
+            repository.getAllMemos(pageId).collect {
+                _memoList.value = it
             }
         }
     }
-
 }
 

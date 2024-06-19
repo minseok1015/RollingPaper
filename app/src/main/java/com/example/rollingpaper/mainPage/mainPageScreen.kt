@@ -99,8 +99,10 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
     }
 
 //    val scrollOffset by remember { derivedStateOf { lazyListState.firstVisibleItemScrollOffset } }
-    LaunchedEffect(Unit) {
-        memoModel.getAllMemos()
+    LaunchedEffect(pageId) {
+        pageId?.let {
+            memoModel.getAllMemos(it)
+        }
     }
 
     ModalNavigationDrawer(
