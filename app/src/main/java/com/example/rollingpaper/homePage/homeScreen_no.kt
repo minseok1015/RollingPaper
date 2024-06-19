@@ -66,7 +66,9 @@ fun homeScreen_no(navController: NavController, viewModel: KakaoAuthViewModel) {
             )
 
             Button(
-                onClick = { navController.navigate(Routes.Page.route) },
+                onClick = {
+                    navController.navigate(Routes.EnterPage.route)
+                },
                 colors = ButtonDefaults.buttonColors(Color(0xFF3C352E)),
                 modifier = Modifier
                     .fillMaxWidth(0.6f)

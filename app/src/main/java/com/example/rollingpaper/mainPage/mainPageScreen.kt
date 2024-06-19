@@ -62,7 +62,6 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
@@ -119,7 +118,11 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
         scrimColor = Color.Black.copy(alpha = 0.32f) // 스크림 색상 설정
     ) {
         Scaffold(
-            topBar = { TopBar(onMenuClick = { scope.launch { drawerState.open() } }, kakaoAuthViewModel, pageId) },
+            topBar = { title?.let {
+                TopBar(onMenuClick = { scope.launch { drawerState.open() } }, kakaoAuthViewModel, pageId,
+                    it
+                )
+            } },
             floatingActionButton = {
                 Column(
                     horizontalAlignment = Alignment.End,
@@ -161,9 +164,8 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
                     .fillMaxSize()
                     .background(themeColor)
             ) {
-                Text("페이지 ID: $pageId", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+//                Text("페이지 ID: $pageId", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(16.dp))
-                Text("제목: $title", fontSize = 18.sp, fontWeight = FontWeight.Medium)
 
 //                val memoModel = viewModel<MemoViewModel>()
 //                val chunkedItems = memoModel.memoList.chunked(2)
@@ -194,8 +196,8 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 for (item in rowItems) {
-                                    MemoItem(MemoContents = item, modifier = Modifier.weight(1f)) {
-                                        // onClick 핸들러
+                                    if (pageId != null) {
+                                        MemoItem(MemoContents = item, modifier = Modifier.weight(1f),memoModel,pageId)
                                     }
                                 }
                                 if (rowItems.size < 2) {
@@ -269,9 +271,9 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(onMenuClick: () -> Unit, viewModel: KakaoAuthViewModel, pageId: String?) {
+fun TopBar(onMenuClick: () -> Unit, viewModel: KakaoAuthViewModel, pageId: String?, title:String) {
     TopAppBar(
-        title = { Text("To. 미니", fontSize = 20.sp) },
+        title = { Text("제목: $title", fontSize = 20.sp) },
         navigationIcon = {
             IconButton(onClick = {
                 // 공유하기 로직
@@ -315,8 +317,8 @@ fun TopBar(onMenuClick: () -> Unit, viewModel: KakaoAuthViewModel, pageId: Strin
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun MemoItem(MemoContents: Memo, modifier: Modifier = Modifier, onClick: () -> Unit) {
-        val rotationAngle = Random.nextFloat() * 10 - 5 // -5도에서 5도 사이의 랜덤 각도
+    fun MemoItem(MemoContents: Memo, modifier: Modifier = Modifier, memoModel:MemoViewModel,pageId:String) {
+        val rotationAngle by remember { mutableStateOf(Random.nextFloat() * 10 - 5) } // -5도에서 5도 사이의 랜덤 각도
         var likes by remember { mutableStateOf(MemoContents.like) }
 
         Box(modifier = modifier.padding(8.dp)) {
@@ -363,7 +365,10 @@ fun TopBar(onMenuClick: () -> Unit, viewModel: KakaoAuthViewModel, pageId: Strin
                         Icons.Default.Favorite,
                         contentDescription = null,
                         tint = Color.Red,
-                        modifier = Modifier.clickable { likes++ }
+                        modifier = Modifier.clickable {
+                            likes++
+                            memoModel.increaseLike(pageId, MemoContents.memoId)
+                        }
                     )
                 }
             }

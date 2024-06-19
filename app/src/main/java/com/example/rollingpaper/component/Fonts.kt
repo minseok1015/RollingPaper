@@ -10,9 +10,11 @@ data class Fonts(
 ) {
     companion object {
         // Compose FontFamily 객체를 포함하는 배열을 정의합니다.
-        private val fontArray = arrayOf(
-            Fonts(name = "Red", font = FontFamily(Font(R.font.santokki))),
-            Fonts(name = "Blue", font = FontFamily(Font(R.font.snow))),
+        val fontArray = arrayOf(
+            Fonts(name = "산토끼", font = FontFamily(Font(R.font.santokki))),
+            Fonts(name = "눈내리는", font = FontFamily(Font(R.font.snow))),
+            Fonts(name = "본고딕", font = FontFamily(Font(R.font.noto))),
+            Fonts(name = "한나체", font = FontFamily(Font(R.font.baemin)))
             // 다른 폰트들도 추가할 수 있습니다.
         )
 

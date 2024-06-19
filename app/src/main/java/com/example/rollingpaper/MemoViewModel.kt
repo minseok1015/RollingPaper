@@ -20,6 +20,18 @@ class MemoViewModelFactory(private val application: Application, private val rep
 }
 
 class MemoViewModel(private val application: Application, private val repository: Repository) : AndroidViewModel(application) {
+    private var currentMemoId = 0
+
+    init {
+        viewModelScope.launch {
+            currentMemoId = repository.getCurrentMemoId()
+        }
+    }
+
+    fun getNextMemoId(): Int {
+        currentMemoId++
+        return currentMemoId
+    }
 
     private var _memoList = MutableStateFlow<List<Memo>>(emptyList())
     val memoList = _memoList.asStateFlow()
@@ -42,6 +54,12 @@ class MemoViewModel(private val application: Application, private val repository
             repository.getPageInfo(pageId).collect { page ->
                 page?.let(onSuccess) ?: onError(Exception("Page not found"))
             }
+        }
+    }
+
+    fun increaseLike(pageId: String, memoId: Int) {
+        viewModelScope.launch {
+            repository.increaseLike(pageId, memoId)
         }
     }
 }
