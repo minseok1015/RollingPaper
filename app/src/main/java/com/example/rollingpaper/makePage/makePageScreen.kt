@@ -1,4 +1,3 @@
-package com.example.rollingpaper.makePage
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,13 +28,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.rollingpaper.Page
+import com.example.rollingpaper.Repository
 import com.example.rollingpaper.Routes
+import com.google.firebase.Firebase
+import com.google.firebase.database.database
+import java.util.UUID
 
 @Composable
-fun makePage(navController: NavController) {
+fun makePage(navController: NavController,pageViewModel: PageViewModel = viewModel(factory = PageViewModelFactory(
+    Repository(Firebase.database.getReference("/Pages"))
+))) {
     var selectedTheme by remember { mutableStateOf(1) }
     var titleText by remember { mutableStateOf("") }
+
 
     Column(
         modifier = Modifier
@@ -52,6 +60,7 @@ fun makePage(navController: NavController) {
             modifier = Modifier.fillMaxWidth(),
             maxLines = 1
         )
+
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -72,7 +81,12 @@ fun makePage(navController: NavController) {
             OutlinedButton(onClick = { navController.navigate(Routes.Home.route) }) {
                 Text("뒤로가기", fontWeight = FontWeight.Bold)
             }
-            OutlinedButton(onClick = { /* TODO: 페이지 생성 동작 추가 */ }) {
+            OutlinedButton(onClick = {
+                val pageId = generatePageId()
+                val newPage = Page(pageId = pageId, theme = selectedTheme, title = titleText)
+                pageViewModel.insertPage(newPage)
+                navController.navigate("Page/${pageId}?title=${titleText}&theme=${selectedTheme}")
+            }) {
                 Text("페이지 생성", fontWeight = FontWeight.Bold)
             }
         }
@@ -98,4 +112,9 @@ fun ThemeOption(text: String, color: Color, isSelected: Boolean, onClick: () -> 
         Spacer(modifier = Modifier.weight(1f))
         RadioButton(selected = isSelected, onClick = onClick)
     }
+}
+
+
+fun generatePageId(): String {
+    return UUID.randomUUID().toString().replace("-", "").substring(0, 10)
 }

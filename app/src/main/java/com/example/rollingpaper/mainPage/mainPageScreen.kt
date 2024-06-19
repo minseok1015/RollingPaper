@@ -1,8 +1,6 @@
 package com.example.rollingpaper.mainPage
 
-import android.widget.Toast
 import android.util.Log
-import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,7 +23,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -39,7 +36,6 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -54,11 +50,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -75,9 +68,7 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
@@ -87,34 +78,39 @@ import com.example.rollingpaper.KakaoAuthViewModel
 import com.example.rollingpaper.MainScreen
 import com.example.rollingpaper.Memo
 import com.example.rollingpaper.MemoViewModel
-import com.example.rollingpaper.R
-import com.example.rollingpaper.Routes
 import com.example.rollingpaper.StickerViewModel
 import com.example.rollingpaper.component.Colors
 import com.example.rollingpaper.component.FontColors
 import com.example.rollingpaper.component.Fonts
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainPageScreen(navController: NavController,memoModel:MemoViewModel, stickerViewModel: StickerViewModel = viewModel()) {
+fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: NavController, memoModel: MemoViewModel, stickerViewModel: StickerViewModel = viewModel(), kakaoAuthViewModel: KakaoAuthViewModel) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
 
     val scope = rememberCoroutineScope()
+//    val lazyListState = rememberLazyListState()
+//    val table= Firebase.database.getReference("Pages/memos")
+//    val memoModel: MemoViewModel = viewModel(factory = MemoViewModelFactory(application, Repository(table)))
     val memoList by memoModel.memoList.collectAsState(initial = emptyList())
-    val kakaoAuthViewModel: KakaoAuthViewModel = viewModel()
-    val lazyListState = rememberLazyListState()
 
-    LaunchedEffect(Unit) {
-        memoModel.getAllMemos()
+    val themeColor = when (theme) {
+        1 -> Color(0xFFD7FBE8)
+        2 -> Color(0xFFD7E8FB)
+        3 -> Color(0xFFFBD7D7)
+        else -> Color.White
     }
 
-    val scrollOffset by remember { derivedStateOf { lazyListState.firstVisibleItemScrollOffset } }
+//    val scrollOffset by remember { derivedStateOf { lazyListState.firstVisibleItemScrollOffset } }
+    LaunchedEffect(pageId) {
+        pageId?.let {
+            memoModel.getAllMemos(it)
+        }
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -130,16 +126,7 @@ fun MainPageScreen(navController: NavController,memoModel:MemoViewModel, sticker
         scrimColor = Color.Black.copy(alpha = 0.32f) // 스크림 색상 설정
     ) {
         Scaffold(
-            topBar = { TopBar(
-                onMenuClick = { scope.launch { drawerState.open() } },
-                onShareClick = {
-                    kakaoAuthViewModel.handleKakaoLogin { user ->
-                        user?.let {
-                            kakaoAuthViewModel.fetchFriends()
-                        }
-                    }
-                }
-            ) },
+            topBar = { TopBar(onMenuClick = { scope.launch { drawerState.open() } }, kakaoAuthViewModel, pageId) },
             floatingActionButton = {
                 Column(
                     horizontalAlignment = Alignment.End,
@@ -148,7 +135,12 @@ fun MainPageScreen(navController: NavController,memoModel:MemoViewModel, sticker
                         .padding(16.dp)
                 ) {
                     FloatingActionButton(
-                        onClick = { navController.navigate(Routes.Memo.route) },
+                        onClick = {
+                            pageId?.let {
+                                val route = "Memo/$it?title=$title&theme=$theme"
+                                navController.navigate(route)
+                            }
+                        },
                         containerColor = Color.Black,
                         contentColor = Color.White,
                         shape = CircleShape
@@ -174,25 +166,29 @@ fun MainPageScreen(navController: NavController,memoModel:MemoViewModel, sticker
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize()
+                    .background(themeColor)
             ) {
+                Text("페이지 ID: $pageId", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(16.dp))
+                Text("제목: $title", fontSize = 18.sp, fontWeight = FontWeight.Medium)
+
+//                val memoModel = viewModel<MemoViewModel>()
+//                val chunkedItems = memoModel.memoList.chunked(2)
 
 
                 val listState = rememberLazyListState()
-                val itemHeight = with(LocalDensity.current) { 300.dp.toPx() } // Your item height
+//                val itemHeight = with(LocalDensity.current) { 300.dp.toPx() } // Your item height
                 val firstVisibleItemIndex = listState.firstVisibleItemIndex
                 val firstVisibleItemScrollOffset = listState.firstVisibleItemScrollOffset
-                val totalOffsetInPx = firstVisibleItemIndex * 150 + firstVisibleItemScrollOffset
+//                val totalOffsetInPx = firstVisibleItemIndex * 150 + firstVisibleItemScrollOffset
                 val scrollDp =
                     with(LocalDensity.current) { (firstVisibleItemIndex * 180).dp + firstVisibleItemScrollOffset.toDp() }
                 var imageOffset by remember { mutableStateOf(Offset.Zero) }
 //                Text("dp : $dpjb")
                 Box(
-                val chunkedItems = memoList.chunked(2)
-
-                LazyColumn(
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                
                 ) {
+                    val chunkedItems = memoList.chunked(2)
 
                     LazyColumn(
                         state = listState,
@@ -276,25 +272,18 @@ fun MainPageScreen(navController: NavController,memoModel:MemoViewModel, sticker
             }
         }
     }
-
-    val friends by kakaoAuthViewModel.friends.collectAsState()
-    if (friends.isNotEmpty()) {
-        FriendSelectionDialog(friends) { selectedFriends ->
-            kakaoAuthViewModel.sendMessage(selectedFriends, "안녕하세요! 이 메시지는 테스트입니다.")
-            Toast.makeText(navController.context, "메시지를 보냈습니다.", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    MainScreen()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(onMenuClick: () -> Unit, onShareClick: () -> Unit) {
+fun TopBar(onMenuClick: () -> Unit, viewModel: KakaoAuthViewModel, pageId: String?) {
     TopAppBar(
         title = { Text("To. 미니", fontSize = 20.sp) },
         navigationIcon = {
-            IconButton(onClick = onShareClick) {
+            IconButton(onClick = {
+                // 공유하기 로직
+                viewModel.openPicker(pageId)
+            }) {
                 Icon(
                     imageVector = Icons.Default.Favorite,
                     contentDescription = "Share"
@@ -313,7 +302,7 @@ fun TopBar(onMenuClick: () -> Unit, onShareClick: () -> Unit) {
             containerColor = Color.White,
             titleContentColor = Color.Black,
             actionIconContentColor = Color.Black
-        )
+        ))
     }
 
     @Composable
@@ -324,7 +313,6 @@ fun TopBar(onMenuClick: () -> Unit, onShareClick: () -> Unit) {
                 .padding(16.dp)
         ) {
             Text(text = "로그인하세요", modifier = Modifier.padding(16.dp))
-            Divider()
             Text(text = "홈", fontSize = 24.sp, modifier = Modifier.padding(16.dp))
             Text(text = "마이페이지", fontSize = 24.sp, modifier = Modifier.padding(16.dp))
             Text(text = "Team5", fontSize = 24.sp, modifier = Modifier.padding(16.dp))
@@ -338,24 +326,26 @@ fun TopBar(onMenuClick: () -> Unit, onShareClick: () -> Unit) {
         val rotationAngle = Random.nextFloat() * 10 - 5 // -5도에서 5도 사이의 랜덤 각도
         var likes by remember { mutableStateOf(MemoContents.like) }
 
-    Box(modifier = modifier.padding(8.dp)) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp)
-                .graphicsLayer(rotationZ = rotationAngle)
-        ) {
-            Card(
-                modifier = Modifier.fillMaxSize(),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                colors = CardDefaults.cardColors(containerColor = Colors.getColorByIndex(MemoContents.memoColor)) // memoColor를 배경색으로 지정
+        Box(modifier = modifier.padding(8.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .graphicsLayer(rotationZ = rotationAngle)
             ) {
                 Card(
                     modifier = Modifier.fillMaxSize(),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                    colors = CardDefaults.cardColors(containerColor = MemoContents.memoColor) // memoColor를 배경색으로 지정
+                    colors = CardDefaults.cardColors(containerColor = Colors.getColorByIndex(MemoContents.memoColor)) // memoColor를 배경색으로 지정
                 ) {
-                    Text(text = MemoContents.content,
+                    Column(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth()
+                            .fillMaxHeight(),
+                        verticalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(text = MemoContents.content,
                         color = FontColors.getFontColorByIndex(MemoContents.fontColor),
                         fontFamily = Fonts.getFontByIndex(MemoContents.font)
                     )
@@ -363,6 +353,8 @@ fun TopBar(onMenuClick: () -> Unit, onShareClick: () -> Unit) {
                         color =  FontColors.getFontColorByIndex(MemoContents.fontColor),
                         fontFamily = Fonts.getFontByIndex(MemoContents.font)
                     )
+                    }
+                    
                 }
                 BadgedBox(
                     modifier = Modifier
@@ -382,41 +374,6 @@ fun TopBar(onMenuClick: () -> Unit, onShareClick: () -> Unit) {
                     )
                 }
             }
-        }
-    }
-
-@Composable
-fun FriendSelectionDialog(friends: List<String>, onConfirm: (List<String>) -> Unit) {
-    var selectedFriends by remember { mutableStateOf(emptyList<String>()) }
-    val onFriendClick = { friend: String ->
-        selectedFriends = if (selectedFriends.contains(friend)) {
-            selectedFriends - friend
-        } else {
-            selectedFriends + friend
-        }
-    }
-
-    AlertDialog(
-        onDismissRequest = { /* Dialog 닫기 로직 */ },
-        title = { Text(text = "친구 선택") },
-        text = {
-            LazyColumn {
-                items(friends) { friend ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onFriendClick(friend) }
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = friend)
-                        Spacer(modifier = Modifier.weight(1f))
-                        if (selectedFriends.contains(friend)) {
-                            Icon(imageVector = Icons.Default.Favorite, contentDescription = null)
-                        }
-                    }
-                }
-            }
         },
         confirmButton = {
             TextButton(onClick = { onConfirm(selectedFriends) }) {
@@ -428,5 +385,6 @@ fun FriendSelectionDialog(friends: List<String>, onConfirm: (List<String>) -> Un
                 Text(text = "취소")
             }
         }
-    )
-}
+    }
+
+
