@@ -85,7 +85,7 @@ fun makePage(navController: NavController,pageViewModel: PageViewModel = viewMod
                 val pageId = generatePageId()
                 val newPage = Page(pageId = pageId, theme = selectedTheme, title = titleText)
                 pageViewModel.insertPage(newPage)
-                navController.navigate("Memo/${pageId}?title=${titleText}&theme=${selectedTheme}")
+                navController.navigate("Page/${pageId}?title=${titleText}&theme=${selectedTheme}")
             }) {
                 Text("페이지 생성", fontWeight = FontWeight.Bold)
             }
