@@ -41,7 +41,7 @@ import com.example.rollingpaper.StickerViewModel
 import com.kakao.sdk.friend.m.s
 
 @Composable
-fun StickerPage(context: Context, stickerViewModel: StickerViewModel = viewModel()) {
+fun StickerPage(context: Context, stickerViewModel: StickerViewModel) {
     val typedArray = context.resources.obtainTypedArray(R.array.stickerImages)
     val stickerList = mutableListOf<Drawable?>()
 //    var selectedSticker by remember {

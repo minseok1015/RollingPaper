@@ -59,6 +59,7 @@ fun MainScreen(
     var imageOffset by remember { mutableStateOf(Offset.Zero) }
 
     Box(modifier = Modifier.fillMaxSize()) {
+        Log.d("mymy", stickerViewModel.show.value.toString())
         if (stickerViewModel.completeShow.value) {
             val stickerObject = stickerViewModel.nowSticker
             val bitmap = stickerObject.sticker?.toBitmap()
@@ -113,10 +114,11 @@ fun MainScreen(
                     text = "완료"
                 )
             }
-
+            Log.d("mymy", "cahne")
         }
         if (stickerViewModel.show.value) {
-            StickerPage(context)
+            Log.d("mymy", "hello")
+            StickerPage(context, stickerViewModel)
         }
 
     }

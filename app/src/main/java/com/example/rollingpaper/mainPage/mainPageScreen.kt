@@ -284,8 +284,9 @@ fun MainPageScreen(
                                 }
                             }
                         }
-                        MainScreen(memoModel = memoModel, pageId = pageId!!)
+//                        MainScreen(memoModel = memoModel, pageId = pageId!!)
                     }
+                    MainScreen(stickerViewModel = stickerViewModel, memoModel = memoModel, pageId = pageId!!)
                 }
             }
         }
