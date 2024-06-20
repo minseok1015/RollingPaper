@@ -17,7 +17,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -77,12 +76,7 @@ fun makeMemoScreen(pageId: String, navController: NavController, kakaoAuthViewMo
         })
     }
 
-    if (showTextAlignDialog) {
-        TextAlignDialog(textAlign = textAlign, onDismiss = { showTextAlignDialog = false }, onConfirm = { newAlign ->
-            textAlign = newAlign
-            showTextAlignDialog = false
-        })
-    }
+
 
     if (showColorDialog) {
         ColorDialog(textColor, onDismiss = { showColorDialog = false }, onConfirm = { newColor ->
@@ -237,36 +231,36 @@ fun makeMemoScreen(pageId: String, navController: NavController, kakaoAuthViewMo
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(60.dp))
+
+            NavigationBar(
+                containerColor = Color.LightGray,
+                contentColor = Color.Black,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+
+            ) {
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Edit, contentDescription = "Text Size") },
+                    selected = false,
+                    onClick = { showFontSizeDialog = true }
+                )
+
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Favorite, contentDescription = "Text Color") },
+                    selected = false,
+                    onClick = { showColorDialog = true }
+                )
+                NavigationBarItem(
+                    icon = { Icon(painter = painterResource(R.drawable.bono1), contentDescription = "Background") },
+                    selected = false,
+                    onClick = { showBackgroundColorDialog = true }
+                )
+            }
         }
 
-        NavigationBar(
-            containerColor = Color.LightGray,
-            contentColor = Color.Black,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-        ) {
-            NavigationBarItem(
-                icon = { Icon(Icons.Default.Edit, contentDescription = "Text Size") },
-                selected = false,
-                onClick = { showFontSizeDialog = true }
-            )
-            NavigationBarItem(
-                icon = { Icon(Icons.Default.LocationOn, contentDescription = "Text Alignment") },
-                selected = false,
-                onClick = { showTextAlignDialog = true }
-            )
-            NavigationBarItem(
-                icon = { Icon(Icons.Default.Favorite, contentDescription = "Text Color") },
-                selected = false,
-                onClick = { showColorDialog = true }
-            )
-            NavigationBarItem(
-                icon = { Icon(painter = painterResource(R.drawable.bono1), contentDescription = "Background") },
-                selected = false,
-                onClick = { showBackgroundColorDialog = true }
-            )
-        }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -350,56 +344,7 @@ fun FontSizeDialog(fontSize: TextUnit, onDismiss: () -> Unit, onConfirm: (TextUn
     )
 }
 
-@Composable
-fun TextAlignDialog(
-    textAlign: TextAlign,
-    onDismiss: () -> Unit,
-    onConfirm: (TextAlign) -> Unit
-) {
-    var newAlign by remember { mutableStateOf(textAlign) }
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("글씨 정렬 변경") },
-        text = {
-            Column {
-                Button(
-                    onClick = { newAlign = TextAlign.Start },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                ) {
-                    Text("왼쪽 정렬")
-                }
-                Button(
-                    onClick = { newAlign = TextAlign.Center },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                ) {
-                    Text("가운데 정렬")
-                }
-                Button(
-                    onClick = { newAlign = TextAlign.End },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                ) {
-                    Text("오른쪽 정렬")
-                }
-            }
-        },
-        confirmButton = {
-            Button(onClick = { onConfirm(newAlign) }) {
-                Text("확인")
-            }
-        },
-        dismissButton = {
-            Button(onClick = onDismiss) {
-                Text("취소")
-            }
-        }
-    )
-}
+
 
 @Composable
 fun ColorDialog(textColor: Color, onDismiss: () -> Unit, onConfirm: (Color) -> Unit) {
