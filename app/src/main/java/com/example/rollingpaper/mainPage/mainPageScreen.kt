@@ -72,6 +72,7 @@ import com.example.rollingpaper.KakaoAuthViewModel
 import com.example.rollingpaper.MainScreen
 import com.example.rollingpaper.Memo
 import com.example.rollingpaper.MemoViewModel
+import com.example.rollingpaper.Routes
 import com.example.rollingpaper.StickerViewModel
 import com.example.rollingpaper.component.Colors
 import com.example.rollingpaper.component.FontColors
@@ -112,7 +113,7 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
                     .fillMaxHeight()
                     .background(Color.White),
                 content = {
-                    DrawerContent()
+                    DrawerContent(navController)
                 }
             )
         },
@@ -302,20 +303,38 @@ fun TopBar(onMenuClick: () -> Unit, viewModel: KakaoAuthViewModel, pageId: Strin
         ))
     }
 
-    @Composable
-    fun DrawerContent() {
-        Column(
+@Composable
+fun DrawerContent(navController: NavController) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "홈",
+            fontSize = 24.sp,
             modifier = Modifier
-                .fillMaxSize()
                 .padding(16.dp)
-        ) {
-            Text(text = "로그인하세요", modifier = Modifier.padding(16.dp))
-            Text(text = "홈", fontSize = 24.sp, modifier = Modifier.padding(16.dp))
-            Text(text = "마이페이지", fontSize = 24.sp, modifier = Modifier.padding(16.dp))
-            Text(text = "Team5", fontSize = 24.sp, modifier = Modifier.padding(16.dp))
-            Text(text = "팀원 소개", fontSize = 24.sp, modifier = Modifier.padding(16.dp))
-        }
+                .clickable {
+                    navController.navigate(Routes.Home.route)
+                }
+        )
+        Text(
+            text = "Team5",
+            fontSize = 24.sp,
+            modifier = Modifier.padding(16.dp)
+        )
+        Text(
+            text = "팀원 소개",
+            fontSize = 24.sp,
+            modifier = Modifier
+                .padding(16.dp)
+                .clickable {
+                    navController.navigate(Routes.TeamPage.route)
+                }
+        )
     }
+}
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
