@@ -2,11 +2,7 @@ package com.example.rollingpaper
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.core.content.ContextCompat
-import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseException
@@ -35,111 +31,51 @@ class Repository(private val table: DatabaseReference) {
         table.child("${pageId}/sticker/${stickerId}").removeValue()
     }
 
-    fun getAllStickers(pageId: String, context: Context): Flow<List<SelectedSticker>> =
-        callbackFlow {
+    fun getAllStickers(pageId: String, context: Context): Flow<List<SelectedSticker>> = callbackFlow {
+        val stListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val stli = mutableListOf<SelectedSticker>()
+                for (itemSnapshot in snapshot.children) {
+                    Log.d("mymyss", snapshot.children.toString())
+                    val imgIdx = itemSnapshot.key.toString().split("X")[0]
 
-//            val stListener2 = object : ChildEventListener {
-//                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-//                    val stli = mutableListOf<SelectedSticker>()
-//                    for (itemSnpashot in snapshot.children) {
-//                        var imgIdx = itemSnpashot.getKey().toString().split("X")[0]
-//
-//                        val resourceId = context.resources.getIdentifier(
-//                            "ku${imgIdx}",
-//                            "drawable",
-//                            context.packageName
-//                        )
-//
-////                        var x = itemSnpashot.child("x").getValue().toString().toFloat()
-//                        var x = itemSnpashot.child("x").getValue()
-//                        var y = itemSnpashot.child("y").getValue()
-//                        var fx: Float = 0.0f
-//                        var fy: Float = 0.0f
-//                        if (x != null && y != null) {
-//                            fx = x.toString().toFloat()
-//                            fy = y.toString().toFloat()
-//                        }
-//
-//                        var id = itemSnpashot.getKey().toString()
-//                        stli.add(
-//                            SelectedSticker(
-//                                sticker = ContextCompat.getDrawable(context, resourceId),
-//                                id = id,
-//                                offsetX = fx,
-//                                offsetY = fy,
-//                            )
-//                        )
-//                    }
-//                    trySend(stli)
-//                }
-//
-//                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-//                    TODO("Not yet implemented")
-//                }
-//
-//                override fun onChildRemoved(snapshot: DataSnapshot) {
-//                    TODO("Not yet implemented")
-//                }
-//
-//                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-//                    TODO("Not yet implemented")
-//                }
-//
-//                override fun onCancelled(error: DatabaseError) {
-//                    TODO("Not yet implemented")
-//                }
-//
-//            }
+                    val resourceId = context.resources.getIdentifier(
+                        "ku${imgIdx}",
+                        "drawable",
+                        context.packageName
+                    )
 
-            val stListener = object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val stli = mutableListOf<SelectedSticker>()
-                    for (itemSnpashot in snapshot.children) {
-                        Log.d("mymyss", snapshot.children.toString())
-                        var imgIdx = itemSnpashot.getKey().toString().split("X")[0]
-
-                        val resourceId = context.resources.getIdentifier(
-                            "ku${imgIdx}",
-                            "drawable",
-                            context.packageName
-                        )
-//                        var x = itemSnpashot.child("x").getValue().toString().toFloat()
-                        var x = itemSnpashot.child("x").getValue()
-                        var y = itemSnpashot.child("y").getValue()
-                        var fx: Float = 0.0f
-                        var fy: Float = 0.0f
-                        if (x != null && y != null) {
-                            fx = x.toString().toFloat()
-                            fy = y.toString().toFloat()
-                        }
-
-                        var id = itemSnpashot.getKey().toString()
-                        stli.add(
-                            SelectedSticker(
-                                sticker = ContextCompat.getDrawable(context, resourceId),
-                                id = id,
-                                offsetX = fx,
-                                offsetY = fy,
-                            )
-                        )
-
+                    val x = itemSnapshot.child("x").value
+                    val y = itemSnapshot.child("y").value
+                    var fx = 0.0f
+                    var fy = 0.0f
+                    if (x != null && y != null) {
+                        fx = x.toString().toFloat()
+                        fy = y.toString().toFloat()
                     }
-                    trySend(stli)
-                }
 
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
+                    val id = itemSnapshot.key.toString()
+                    stli.add(
+                        SelectedSticker(
+                            sticker = ContextCompat.getDrawable(context, resourceId),
+                            id = id,
+                            offsetX = fx,
+                            offsetY = fy,
+                        )
+                    )
                 }
+                trySend(stli)
             }
-            table.child("${pageId}/sticker").addValueEventListener(stListener)
-            awaitClose {
-                table.child("${pageId}/sticker").removeEventListener(stListener)
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
             }
-//            table.child("${pageId}/sticker").addChildEventListener(stListener)
-//            awaitClose {
-//                table.child("${pageId}/sticker").removeEventListener(stListener)
-//            }
         }
+        table.child("${pageId}/sticker").addValueEventListener(stListener)
+        awaitClose {
+            table.child("${pageId}/sticker").removeEventListener(stListener)
+        }
+    }
 
 
     suspend fun insertPage(page: Page) {

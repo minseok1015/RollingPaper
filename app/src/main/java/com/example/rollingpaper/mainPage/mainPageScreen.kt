@@ -83,7 +83,6 @@ import com.example.rollingpaper.component.Fonts
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainPageScreen(
     pageId: String?,
@@ -98,6 +97,7 @@ fun MainPageScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val memoList by memoModel.memoList.collectAsState(initial = emptyList())
+    val stickerList by memoModel.stickerList.collectAsState(initial = emptyList())
 
     val themeBackground = when (theme) {
         1 -> painterResource(id = R.drawable.theme1)
@@ -109,14 +109,7 @@ fun MainPageScreen(
     LaunchedEffect(pageId) {
         pageId?.let {
             memoModel.getAllMemos(it)
-        }
-        memoModel.getAllStickers(pageId!!, context)
-        memoModel.stickerList.collect { it ->
-            stickerViewModel.selectedArray.addAll(it)
-        }
-        memoModel.getAllStickers(pageId!!, context)
-        memoModel.stickerList.collect { it ->
-            stickerViewModel.selectedArray.addAll(it)
+            memoModel.getAllStickers(it, context)
         }
     }
 
@@ -233,7 +226,7 @@ fun MainPageScreen(
                             }
                         }
 
-                        stickerViewModel.selectedArray.mapIndexed { idx, sticker ->
+                        stickerList.mapIndexed { idx, sticker ->
                             var xdp = with(LocalDensity.current) { sticker.offsetX.toDp() }
                             var ydp = with(LocalDensity.current) { sticker.offsetY.toDp() }
 
@@ -246,7 +239,7 @@ fun MainPageScreen(
                                     .height(60.dp)
                                     .width(60.dp)
                                     .clickable {
-                                        stickerViewModel.toggleDeleteButton(idx)
+//                                        stickerViewModel.toggleDeleteButton(idx)
                                     }
                                     .onGloballyPositioned { layoutCoordinates ->
                                         imageOffset = layoutCoordinates.positionInRoot()

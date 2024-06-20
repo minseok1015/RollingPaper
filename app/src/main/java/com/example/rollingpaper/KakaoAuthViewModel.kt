@@ -50,6 +50,7 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
     val loginEvent: LiveData<Event<Boolean>> get() = _loginEvent
 
     init {
+        clearToken()
         checkLoginStatus()
     }
 

@@ -24,6 +24,8 @@ fun getLocalProperty(key: String, project: Project): String {
 val kakaoNativeAppKey: String = getLocalProperty("kakao_native_app_key", project)
 val kakaoOauthHost : String = getLocalProperty("kakao_oauth_host", project)
 
+val kakaoNativeAppKey_2: String = getLocalProperty("kakao_native_app_key_2", project)
+val kakaoOauthHost_2 : String = getLocalProperty("kakao_oauth_host_2", project)
 // 값을 로그로 출력하여 확인
 println("Kakao Native App Key: $kakaoNativeAppKey")
 println("Kakao OAuth Host: $kakaoOauthHost")
@@ -46,6 +48,9 @@ android {
         // Kakao 네이티브 앱 키를 빌드 설정 필드로 추가
         buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"$kakaoNativeAppKey\"")
         resValue ("string","kakao_oauth_host", kakaoOauthHost)
+
+        buildConfigField("String", "KAKAO_NATIVE_APP_KEY_2", "\"$kakaoNativeAppKey_2\"")
+        resValue ("string","kakao_oauth_host_2", kakaoOauthHost_2)
     }
 
     buildTypes {

@@ -26,6 +26,9 @@
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="be4367df57d1b4431763aef17ad9467d"/>
+        <meta-data
+            android:name="com.kakao.sdk.AppKey2"
+            android:value="dac86807a4a638a7685bfda8082c3b94"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -48,10 +51,15 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <!-- Redirect URI: "kakao${NATIVE_APP_KEY}://oauth" -->
+<!--              oauth  <data android:host="oauth"-->
+<!--                    android:scheme="kakaobe4367df57d1b4431763aef17ad9467d"/>-->
+<!--                <data android:host="kakaolink"-->
+<!--                    android:scheme="kakaobe4367df57d1b4431763aef17ad9467d" />-->
+
                 <data android:host="oauth"
-                    android:scheme="kakaobe4367df57d1b4431763aef17ad9467d"/>
+                    android:scheme="kakaodac86807a4a638a7685bfda8082c3b94"/>
                 <data android:host="kakaolink"
-                    android:scheme="kakaobe4367df57d1b4431763aef17ad9467d" />
+                    android:scheme="kakaodac86807a4a638a7685bfda8082c3b94" />
             </intent-filter>
         </activity>
     </application>

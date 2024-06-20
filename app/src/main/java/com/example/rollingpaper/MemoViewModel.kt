@@ -61,8 +61,8 @@ class MemoViewModel(private val application: Application, private val repository
 
     fun getAllStickers(pageId: String, context: Context) {
         viewModelScope.launch {
-            repository.getAllStickers(pageId, context).collect{
-                _stickerList.value = it
+            repository.getAllStickers(pageId, context).collect {
+                _stickerList.value = it.distinctBy { sticker -> sticker.id }
             }
         }
     }
