@@ -35,7 +35,7 @@ sealed class Routes(val route: String) {
 fun Graph(navController: NavHostController, kakaoAuthViewModel: KakaoAuthViewModel = viewModel()) {
     val isLoggedIn by kakaoAuthViewModel.isLoggedIn.observeAsState(initial = false)
     val loginEvent by kakaoAuthViewModel.loginEvent.observeAsState()
-    val table = Firebase.database.getReference("Pages")
+    val table= Firebase.database.getReference("Pages")
     val application = LocalContext.current.applicationContext as Application
     val memoModel: MemoViewModel = viewModel(factory = MemoViewModelFactory(application, Repository(table)))
     val stickerViewModel: StickerViewModel = viewModel()
@@ -64,7 +64,7 @@ fun Graph(navController: NavHostController, kakaoAuthViewModel: KakaoAuthViewMod
             val pageId = backStackEntry.arguments?.getString("pageId")
             val title = backStackEntry.arguments?.getString("title")
             val theme = backStackEntry.arguments?.getString("theme")?.toIntOrNull()
-            MainPageScreen(pageId = pageId, title = title, theme = theme, navController = navController, memoModel = memoModel, kakaoAuthViewModel = kakaoAuthViewModel)
+            MainPageScreen(pageId = pageId, title = title, theme = theme, navController = navController, memoModel = memoModel, stickerViewModel= stickerViewModel,kakaoAuthViewModel = kakaoAuthViewModel)
         }
 
         composable(route = Routes.Memo.route) { backStackEntry ->

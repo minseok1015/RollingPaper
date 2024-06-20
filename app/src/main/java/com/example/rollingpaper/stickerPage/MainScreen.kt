@@ -48,13 +48,18 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlin.math.roundToInt
 
 @Composable
-fun MainScreen(stickerViewModel: StickerViewModel = viewModel()) {
+fun MainScreen(
+    stickerViewModel: StickerViewModel = viewModel(),
+    memoModel: MemoViewModel,
+    pageId: String
+) {
     var offsetX by remember { mutableStateOf(400f) }
     var offsetY by remember { mutableStateOf(1000f) }
     val context = LocalContext.current
     var imageOffset by remember { mutableStateOf(Offset.Zero) }
 
     Box(modifier = Modifier.fillMaxSize()) {
+        Log.d("mymy", stickerViewModel.show.value.toString())
         if (stickerViewModel.completeShow.value) {
             val stickerObject = stickerViewModel.nowSticker
             val bitmap = stickerObject.sticker?.toBitmap()
@@ -82,12 +87,19 @@ fun MainScreen(stickerViewModel: StickerViewModel = viewModel()) {
             ElevatedButton(
                 onClick = {
                     stickerViewModel.changeCompleteShow()
-                    stickerViewModel.selectedArray.add(
-                        SelectedSticker(
-                            stickerObject.sticker,
-                            offsetX,
-                            offsetY
-                        )
+//                    stickerViewModel.selectedArray.add(
+//                        SelectedSticker(
+//                            stickerObject.sticker,
+//                            offsetX,
+//                            offsetY,
+//                            id = "${stickerViewModel.stickerId}${(offsetX * 100).toInt()}${(offsetY * 100).toInt()}"
+//                        )
+//                    )
+                    memoModel.insertSticker(
+                        pageId,
+                        "${stickerViewModel.stickerId}${(offsetX * 100).toInt()}${(offsetY * 100).toInt()}",
+                        offsetX,
+                        offsetY
                     )
                     offsetX = 400f
                     offsetY = 1000f
@@ -102,10 +114,10 @@ fun MainScreen(stickerViewModel: StickerViewModel = viewModel()) {
                     text = "완료"
                 )
             }
-
         }
         if (stickerViewModel.show.value) {
-            StickerPage(context)
+            Log.d("mymy", "hello")
+            StickerPage(context, stickerViewModel)
         }
 
     }

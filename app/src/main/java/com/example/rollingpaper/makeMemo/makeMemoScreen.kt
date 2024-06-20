@@ -253,7 +253,7 @@ fun makeMemoScreen(pageId: String, navController: NavController, kakaoAuthViewMo
                     onClick = { showColorDialog = true }
                 )
                 NavigationBarItem(
-                    icon = { Icon(painter = painterResource(R.drawable.bono1), contentDescription = "Background") },
+                    icon = { Icon(painter = painterResource(R.drawable.ku0), contentDescription = "Background") },
                     selected = false,
                     onClick = { showBackgroundColorDialog = true }
                 )

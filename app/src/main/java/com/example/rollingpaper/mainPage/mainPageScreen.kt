@@ -63,12 +63,12 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.rollingpaper.KakaoAuthViewModel
 import com.example.rollingpaper.MainScreen
@@ -85,8 +85,17 @@ import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: NavController, memoModel: MemoViewModel, stickerViewModel: StickerViewModel = viewModel(), kakaoAuthViewModel: KakaoAuthViewModel) {
+fun MainPageScreen(
+    pageId: String?,
+    title: String?,
+    theme: Int?,
+    navController: NavController,
+    memoModel: MemoViewModel,
+    stickerViewModel: StickerViewModel,
+    kakaoAuthViewModel: KakaoAuthViewModel
+) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val memoList by memoModel.memoList.collectAsState(initial = emptyList())
 
@@ -100,6 +109,14 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
     LaunchedEffect(pageId) {
         pageId?.let {
             memoModel.getAllMemos(it)
+        }
+        memoModel.getAllStickers(pageId!!, context)
+        memoModel.stickerList.collect { it ->
+            stickerViewModel.selectedArray.addAll(it)
+        }
+        memoModel.getAllStickers(pageId!!, context)
+        memoModel.stickerList.collect { it ->
+            stickerViewModel.selectedArray.addAll(it)
         }
     }
 
@@ -120,7 +137,13 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
         Scaffold(
             topBar = {
                 title?.let {
-                    TopBar(onMenuClick = { scope.launch { drawerState.open() } }, kakaoAuthViewModel, pageId, it, navController)
+                    TopBar(
+                        onMenuClick = { scope.launch { drawerState.open() } },
+                        kakaoAuthViewModel,
+                        pageId,
+                        it,
+                        navController
+                    )
                 }
             },
             floatingActionButton = {
@@ -193,7 +216,12 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
                                 ) {
                                     for (item in rowItems) {
                                         if (pageId != null) {
-                                            MemoItem(MemoContents = item, modifier = Modifier.weight(1f), memoModel, pageId)
+                                            MemoItem(
+                                                MemoContents = item,
+                                                modifier = Modifier.weight(1f),
+                                                memoModel,
+                                                pageId
+                                            )
                                         }
                                     }
                                     if (rowItems.size < 2) {
@@ -204,14 +232,19 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
                                 }
                             }
                         }
+
                         stickerViewModel.selectedArray.mapIndexed { idx, sticker ->
                             var xdp = with(LocalDensity.current) { sticker.offsetX.toDp() }
                             var ydp = with(LocalDensity.current) { sticker.offsetY.toDp() }
+
                             Box(
                                 modifier = Modifier
-                                    .offset(x = xdp, y = ydp - scrollDp)
-                                    .height(130.dp)
-                                    .width(130.dp)
+                                    .offset(
+                                        x = xdp,
+                                        y = ydp - scrollDp
+                                    )
+                                    .height(60.dp)
+                                    .width(60.dp)
                                     .clickable {
                                         stickerViewModel.toggleDeleteButton(idx)
                                     }
@@ -220,9 +253,13 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
                                     }
                             ) {
                                 Image(
-                                    painter = BitmapPainter(sticker.sticker?.toBitmap()!!.asImageBitmap()),
+                                    painter = BitmapPainter(
+                                        sticker.sticker?.toBitmap()!!.asImageBitmap()
+                                    ),
                                     contentDescription = null,
-                                    modifier = Modifier.size(130.dp).padding(top = 15.dp)
+                                    modifier = Modifier
+                                        .size(60.dp)
+                                        .padding(top = 15.dp)
                                 )
                                 if (sticker.deletable) {
                                     IconButton(
@@ -244,8 +281,12 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
                                 println("Image offset: $imageOffset")
                             }
                         }
+                        MainScreen(
+                            stickerViewModel = stickerViewModel,
+                            memoModel = memoModel,
+                            pageId = pageId!!
+                        )
                     }
-                    MainScreen()
                 }
             }
         }
@@ -254,13 +295,17 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(onMenuClick: () -> Unit, viewModel: KakaoAuthViewModel, pageId: String?, title:String, navController: NavController) {
+fun TopBar(
+    onMenuClick: () -> Unit,
+    viewModel: KakaoAuthViewModel,
+    pageId: String?,
+    title: String,
+    navController: NavController
+) {
     TopAppBar(
         title = { Text("제목: $title", fontSize = 20.sp) },
         navigationIcon = {
             IconButton(onClick = {
-                // 공유하기 로직
-//                viewModel.openPicker(pageId)
                 navController.navigate("SharePage/${pageId}")
             }) {
                 Icon(
@@ -281,8 +326,9 @@ fun TopBar(onMenuClick: () -> Unit, viewModel: KakaoAuthViewModel, pageId: Strin
             containerColor = Color.White,
             titleContentColor = Color.Black,
             actionIconContentColor = Color.Black
-        ))
-    }
+        )
+    )
+}
 
 @Composable
 fun DrawerContent(navController: NavController) {
@@ -313,65 +359,73 @@ fun DrawerContent(navController: NavController) {
     }
 }
 
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun MemoItem(MemoContents: Memo, modifier: Modifier = Modifier, memoModel:MemoViewModel,pageId:String) {
-        val rotationAngle by remember { mutableStateOf(Random.nextFloat() * 10 - 5) } // -5도에서 5도 사이의 랜덤 각도
-        var likes by remember { mutableStateOf(MemoContents.like) }
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MemoItem(
+    MemoContents: Memo,
+    modifier: Modifier = Modifier,
+    memoModel: MemoViewModel,
+    pageId: String
+) {
+    val rotationAngle by remember { mutableStateOf(Random.nextFloat() * 10 - 5) } // -5도에서 5도 사이의 랜덤 각도
+    var likes by remember { mutableStateOf(MemoContents.like) }
 
-        Box(modifier = modifier.padding(8.dp)) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp)
-                    .graphicsLayer(rotationZ = rotationAngle)
+    Box(modifier = modifier.padding(8.dp)) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(150.dp)
+                .graphicsLayer(rotationZ = rotationAngle)
+        ) {
+            Card(
+                modifier = Modifier.fillMaxSize(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Colors.getColorByIndex(
+                        MemoContents.memoColor
+                    )
+                ) // memoColor를 배경색으로 지정
             ) {
-                Card(
-                    modifier = Modifier.fillMaxSize(),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                    colors = CardDefaults.cardColors(containerColor = Colors.getColorByIndex(MemoContents.memoColor)) // memoColor를 배경색으로 지정
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth()
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth()
-                            .fillMaxHeight(),
-                        verticalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(text = MemoContents.content,
+                    Text(
+                        text = MemoContents.content,
                         color = FontColors.getFontColorByIndex(MemoContents.fontColor),
                         fontFamily = Fonts.getFontByIndex(MemoContents.font),
-                            fontSize = MemoContents.fontSize.sp
+                        fontSize = MemoContents.fontSize.sp
                     )
-                    Text(text = MemoContents.name,
-                        color =  FontColors.getFontColorByIndex(MemoContents.fontColor),
+                    Text(
+                        text = MemoContents.name,
+                        color = FontColors.getFontColorByIndex(MemoContents.fontColor),
                         fontFamily = Fonts.getFontByIndex(MemoContents.font)
-                    )
-                    }
-                    
-                }
-                BadgedBox(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .offset(x = (-8).dp, y = 8.dp),
-                    badge = {
-                        Badge {
-                            Text(text = "$likes")
-                        }
-                    }
-                ) {
-                    Icon(
-                        Icons.Default.Favorite,
-                        contentDescription = null,
-                        tint = Color.Red,
-                        modifier = Modifier.clickable {
-                            likes++
-                            memoModel.increaseLike(pageId, MemoContents.memoId)
-                        }
                     )
                 }
             }
+            BadgedBox(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .offset(x = (-8).dp, y = 8.dp),
+                badge = {
+                    Badge {
+                        Text(text = "$likes")
+                    }
+                }
+            ) {
+                Icon(
+                    Icons.Default.Favorite,
+                    contentDescription = null,
+                    tint = Color.Red,
+                    modifier = Modifier.clickable {
+                        likes++
+                        memoModel.increaseLike(pageId, MemoContents.memoId)
+                    }
+                )
+            }
         }
     }
-
-
+}
