@@ -63,8 +63,10 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
@@ -87,6 +89,7 @@ import kotlin.random.Random
 @Composable
 fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: NavController, memoModel: MemoViewModel, stickerViewModel: StickerViewModel = viewModel(), kakaoAuthViewModel: KakaoAuthViewModel) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val memoList by memoModel.memoList.collectAsState(initial = emptyList())
 
@@ -100,6 +103,10 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
     LaunchedEffect(pageId) {
         pageId?.let {
             memoModel.getAllMemos(it)
+        }
+        memoModel.getAllStickers(pageId!!, context)
+            stickerViewModel.selectedArray.addAll(it)
+        memoModel.stickerList.collect{it ->
         }
     }
 
@@ -239,13 +246,47 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
                                         )
                                     }
                                 }
+                                .onGloballyPositioned { layoutCoordinates ->
+                                    imageOffset = layoutCoordinates.positionInRoot()
+                                }
+                            Image(
+                                painter = BitmapPainter(
+                                    sticker.sticker?.toBitmap()!!.asImageBitmap()
+                                ),
+//                                painter = painterResource(id = R.drawable.ku10),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(130.dp)
+                                    .padding(top = 15.dp)
+
+                            )
+                            if (sticker.deletable) {
+                                IconButton(
+                                    onClick = {
+                                        val stId = stickerViewModel.selectedArray[idx].id
+                                        memoModel.deleteSticker(pageId!!, stId)
+                                        stickerViewModel.removeSticker(idx)
+                                    },
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                ) {
+
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = null,
+                                        tint = Color.Red,
+                                        modifier = Modifier.size(100.dp)
+                                    )
+
+                                }
+                        ) {
                             }
                             LaunchedEffect(imageOffset) {
                                 println("Image offset: $imageOffset")
                             }
                         }
                     }
-                    MainScreen()
+                    MainScreen(memoModel = memoModel, pageId = pageId!!)
                 }
             }
         }

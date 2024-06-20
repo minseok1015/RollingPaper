@@ -1,6 +1,8 @@
 package com.example.rollingpaper
 
 import android.app.Application
+import android.content.Context
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -36,9 +38,32 @@ class MemoViewModel(private val application: Application, private val repository
     private var _memoList = MutableStateFlow<List<Memo>>(emptyList())
     val memoList = _memoList.asStateFlow()
 
+    private var _stickerList = MutableStateFlow<List<SelectedSticker>>(emptyList())
+    val stickerList = _stickerList.asStateFlow()
     fun insertMemo(pageId: String, memo: Memo) {
         viewModelScope.launch {
             repository.insertMemo(pageId, memo,currentMemoId)
+        }
+    }
+
+    fun insertSticker(pageId:String, stickerId:String, x: Float, y:Float){
+        viewModelScope.launch {
+            repository.insertSticker(pageId, stickerId, x, y)
+        }
+    }
+
+    fun deleteSticker(pageId:String, stickerId:String) {
+        viewModelScope.launch {
+            repository.deleteSticker(pageId, stickerId)
+        }
+    }
+
+
+    fun getAllStickers(pageId: String, context: Context) {
+        viewModelScope.launch {
+            repository.getAllStickers(pageId, context).collect{
+                _stickerList.value = it
+            }
         }
     }
 
@@ -49,6 +74,9 @@ class MemoViewModel(private val application: Application, private val repository
             }
         }
     }
+
+
+    
     fun getPageInfo(pageId: String, onSuccess: (Page) -> Unit, onError: (Throwable) -> Unit) {
         viewModelScope.launch {
             repository.getPageInfo(pageId).collect { page ->
