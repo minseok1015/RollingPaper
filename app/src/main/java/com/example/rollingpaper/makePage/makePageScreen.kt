@@ -2,6 +2,7 @@ package com.example.rollingpaper.checkPage
 
 import PageViewModel
 import PageViewModelFactory
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,12 +31,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.rollingpaper.Page
+import com.example.rollingpaper.R
 import com.example.rollingpaper.Repository
 import com.example.rollingpaper.Routes
 import com.google.firebase.Firebase
@@ -70,9 +74,9 @@ fun makePage(navController: NavController,pageViewModel: PageViewModel = viewMod
 
         Text("테마 선택", fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 8.dp))
 
-        ThemeOption("테마 1", Color(0xFFD7FBE8), selectedTheme == 1) { selectedTheme = 1 }
-        ThemeOption("테마 2", Color(0xFFD7E8FB), selectedTheme == 2) { selectedTheme = 2 }
-        ThemeOption("테마 3", Color(0xFFFBD7D7), selectedTheme == 3) { selectedTheme = 3 }
+        ThemeOption("테마 1", painterResource(R.drawable.theme1), selectedTheme == 1) { selectedTheme = 1 }
+        ThemeOption("테마 2", painterResource(R.drawable.theme2), selectedTheme == 2) { selectedTheme = 2 }
+        ThemeOption("테마 3", painterResource(R.drawable.theme3), selectedTheme == 3) { selectedTheme = 3 }
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -114,7 +118,7 @@ fun makePage(navController: NavController,pageViewModel: PageViewModel = viewMod
 }
 
 @Composable
-fun ThemeOption(text: String, color: Color, isSelected: Boolean, onClick: () -> Unit) {
+fun ThemeOption(text: String, painter: Painter, isSelected: Boolean, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth(0.8f)
@@ -125,8 +129,14 @@ fun ThemeOption(text: String, color: Color, isSelected: Boolean, onClick: () -> 
         Box(
             modifier = Modifier
                 .size(50.dp)
-                .background(color, shape = CircleShape)
-        )
+                .background(Color.Transparent, shape = CircleShape)
+        ) {
+            Image(
+                painter = painter,
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
         Spacer(modifier = Modifier.width(16.dp))
         Text(text, fontSize = 18.sp)
         Spacer(modifier = Modifier.weight(1f))
