@@ -35,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -261,7 +262,7 @@ fun makeMemoScreen(pageId: String, navController: NavController, kakaoAuthViewMo
                 onClick = { showColorDialog = true }
             )
             NavigationBarItem(
-                icon = { Icon(painter = painterResource(R.drawable.grr), contentDescription = "Background") },
+                icon = { Icon(painter = painterResource(R.drawable.bono1), contentDescription = "Background") },
                 selected = false,
                 onClick = { showBackgroundColorDialog = true }
             )
