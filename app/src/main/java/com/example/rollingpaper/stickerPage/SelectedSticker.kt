@@ -6,5 +6,6 @@ data class SelectedSticker(
     val sticker: Drawable?,
     var offsetX: Float,
     var offsetY: Float,
-    var deletable: Boolean = false
+    var deletable: Boolean = false,
+    var id: String
 )

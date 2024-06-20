@@ -1,5 +1,6 @@
 package com.example.rollingpaper
 
+import android.app.Application
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -8,15 +9,23 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.rollingpaper.ui.theme.RollingPaperTheme
+import com.google.firebase.Firebase
+import com.google.firebase.database.database
 import com.kakao.sdk.common.util.Utility
 
 
 class MainActivity : ComponentActivity() {
 
     private val kakaoAuthViewModel: KakaoAuthViewModel by viewModels()
+//    val table= Firebase.database.getReference("Pages")
+//    val application = LocalContext.current.applicationContext as Application
+//    val memoModel: MemoViewModel = viewModel(factory = MemoViewModelFactory(application, Repository(table)))
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

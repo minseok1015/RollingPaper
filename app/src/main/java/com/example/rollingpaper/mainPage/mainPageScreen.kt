@@ -61,7 +61,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -72,6 +74,7 @@ import com.example.rollingpaper.KakaoAuthViewModel
 import com.example.rollingpaper.MainScreen
 import com.example.rollingpaper.Memo
 import com.example.rollingpaper.MemoViewModel
+import com.example.rollingpaper.R
 import com.example.rollingpaper.Routes
 import com.example.rollingpaper.StickerViewModel
 import com.example.rollingpaper.component.Colors
@@ -84,7 +87,7 @@ import kotlin.random.Random
 @Composable
 fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: NavController, memoModel: MemoViewModel, stickerViewModel: StickerViewModel = viewModel(), kakaoAuthViewModel: KakaoAuthViewModel) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
-
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
 //    val lazyListState = rememberLazyListState()
 //    val table= Firebase.database.getReference("Pages/memos")
@@ -100,7 +103,12 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
 
 //    val scrollOffset by remember { derivedStateOf { lazyListState.firstVisibleItemScrollOffset } }
     LaunchedEffect(Unit) {
-        memoModel.getAllMemos()
+//        memoModel.getAllMemos()
+        memoModel.getAllStickers(pageId!!, context)
+//        stickerViewModel.selectedArray = memoModel.stickerList.collectAsState(initial= emptyList()).value.toSnapshotStateList()
+        memoModel.stickerList.collect{it ->
+            stickerViewModel.selectedArray.addAll(it)
+        }
     }
 
     ModalNavigationDrawer(
@@ -223,6 +231,7 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
                                 painter = BitmapPainter(
                                     sticker.sticker?.toBitmap()!!.asImageBitmap()
                                 ),
+//                                painter = painterResource(id = R.drawable.ku10),
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size(130.dp)
@@ -232,6 +241,8 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
                             if (sticker.deletable) {
                                 IconButton(
                                     onClick = {
+                                        val stId = stickerViewModel.selectedArray[idx].id
+                                        memoModel.deleteSticker(pageId!!, stId)
                                         stickerViewModel.removeSticker(idx)
                                     },
                                     modifier = Modifier
@@ -254,7 +265,7 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
 
                         }
                     }
-                    MainScreen()
+                    MainScreen(memoModel = memoModel, pageId = pageId!!)
                 }
             }
         }

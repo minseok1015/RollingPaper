@@ -2,6 +2,7 @@ package com.example.rollingpaper
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
@@ -29,27 +31,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.rollingpaper.StickerViewModel
+import com.kakao.sdk.friend.m.s
 
 @Composable
 fun StickerPage(context: Context, stickerViewModel: StickerViewModel = viewModel()) {
     val typedArray = context.resources.obtainTypedArray(R.array.stickerImages)
     val stickerList = mutableListOf<Drawable?>()
-    var selectedSticker by remember {
-        mutableStateOf<Drawable?>(null)
-    }
+//    var selectedSticker by remember {
+//        mutableStateOf<Drawable?>(null)
+//    }
 
     for (i in 0 until typedArray.length()) {
         val drawableResId = typedArray.getResourceId(i, -1)
+//        Log.d("mymyss", drawableResId.toString())
         if (drawableResId != -1) {
             stickerList.add(ContextCompat.getDrawable(context, drawableResId))
+//            stickerList.add(painterResource(id = ))
         }
     }
+//    val drawableResId = typedArray.getResourceId(0, -1)
+//    stickerList.add(ContextCompat.getDrawable(context, drawableResId))
 
     typedArray.recycle()
 
@@ -64,7 +72,7 @@ fun StickerPage(context: Context, stickerViewModel: StickerViewModel = viewModel
                     contentDescription = null,
                     modifier = Modifier
                         .size(50.dp)
-                        .clickable{
+                        .clickable {
                             stickerViewModel.changeShow()
                         }
                 )
@@ -75,7 +83,7 @@ fun StickerPage(context: Context, stickerViewModel: StickerViewModel = viewModel
             columns = GridCells.Fixed(3)
 
         ) {
-            items(items = stickerList) { sticker ->
+            itemsIndexed(items = stickerList) { idx, sticker ->
                 sticker?.let {
                     val bitmap = it.toBitmap()
                     Image(
@@ -84,7 +92,8 @@ fun StickerPage(context: Context, stickerViewModel: StickerViewModel = viewModel
                         modifier = Modifier
                             .padding(5.dp)
                             .clickable {
-                                stickerViewModel.nowSticker = SelectedSticker(it, 400f, 1000f)
+                                stickerViewModel.nowSticker = SelectedSticker(it, 400f, 1000f, id="")
+                                stickerViewModel.stickerId = "${idx}X"
                                 stickerViewModel.changeCompleteShow()
                                 stickerViewModel.changeShow()
                                 stickerViewModel.changeEmoticonShow()
