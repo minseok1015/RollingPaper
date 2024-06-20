@@ -60,9 +60,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
@@ -72,6 +74,7 @@ import com.example.rollingpaper.KakaoAuthViewModel
 import com.example.rollingpaper.MainScreen
 import com.example.rollingpaper.Memo
 import com.example.rollingpaper.MemoViewModel
+import com.example.rollingpaper.R
 import com.example.rollingpaper.Routes
 import com.example.rollingpaper.StickerViewModel
 import com.example.rollingpaper.component.Colors
@@ -84,21 +87,16 @@ import kotlin.random.Random
 @Composable
 fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: NavController, memoModel: MemoViewModel, stickerViewModel: StickerViewModel = viewModel(), kakaoAuthViewModel: KakaoAuthViewModel) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
-
     val scope = rememberCoroutineScope()
-//    val lazyListState = rememberLazyListState()
-//    val table= Firebase.database.getReference("Pages/memos")
-//    val memoModel: MemoViewModel = viewModel(factory = MemoViewModelFactory(application, Repository(table)))
     val memoList by memoModel.memoList.collectAsState(initial = emptyList())
 
-    val themeColor = when (theme) {
-        1 -> Color(0xFFD7FBE8)
-        2 -> Color(0xFFD7E8FB)
-        3 -> Color(0xFFFBD7D7)
-        else -> Color.White
+    val themeBackground = when (theme) {
+        1 -> painterResource(id = R.drawable.theme1)
+        2 -> painterResource(id = R.drawable.theme2)
+        3 -> painterResource(id = R.drawable.theme3)
+        else -> painterResource(id = R.drawable.theme1)
     }
 
-//    val scrollOffset by remember { derivedStateOf { lazyListState.firstVisibleItemScrollOffset } }
     LaunchedEffect(pageId) {
         pageId?.let {
             memoModel.getAllMemos(it)
@@ -117,20 +115,19 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
                 }
             )
         },
-        scrimColor = Color.Black.copy(alpha = 0.32f) // 스크림 색상 설정
+        scrimColor = Color.Black.copy(alpha = 0.32f)
     ) {
         Scaffold(
-            topBar = { title?.let {
-                TopBar(onMenuClick = { scope.launch { drawerState.open() } }, kakaoAuthViewModel, pageId,
-                    it,navController
-                )
-            } },
+            topBar = {
+                title?.let {
+                    TopBar(onMenuClick = { scope.launch { drawerState.open() } }, kakaoAuthViewModel, pageId, it, navController)
+                }
+            },
             floatingActionButton = {
                 Column(
                     horizontalAlignment = Alignment.End,
                     verticalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier
-                        .padding(16.dp)
+                    modifier = Modifier.padding(16.dp)
                 ) {
                     FloatingActionButton(
                         onClick = {
@@ -160,108 +157,92 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
                 }
             }
         ) { innerPadding ->
-            Column(
+            Box(
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize()
-                    .background(themeColor)
             ) {
-//                Text("페이지 ID: $pageId", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(16.dp))
-
-//                val memoModel = viewModel<MemoViewModel>()
-//                val chunkedItems = memoModel.memoList.chunked(2)
-
-
-                val listState = rememberLazyListState()
-//                val itemHeight = with(LocalDensity.current) { 300.dp.toPx() } // Your item height
-                val firstVisibleItemIndex = listState.firstVisibleItemIndex
-                val firstVisibleItemScrollOffset = listState.firstVisibleItemScrollOffset
-//                val totalOffsetInPx = firstVisibleItemIndex * 150 + firstVisibleItemScrollOffset
-                val scrollDp =
-                    with(LocalDensity.current) { (firstVisibleItemIndex * 180).dp + firstVisibleItemScrollOffset.toDp() }
-                var imageOffset by remember { mutableStateOf(Offset.Zero) }
-//                Text("dp : $dpjb")
-                Box(
-                
+                Image(
+                    painter = themeBackground,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+                Column(
+                    modifier = Modifier.fillMaxSize(),
                 ) {
-                    val chunkedItems = memoList.chunked(2)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    val listState = rememberLazyListState()
+                    val firstVisibleItemIndex = listState.firstVisibleItemIndex
+                    val firstVisibleItemScrollOffset = listState.firstVisibleItemScrollOffset
+                    val scrollDp =
+                        with(LocalDensity.current) { (firstVisibleItemIndex * 180).dp + firstVisibleItemScrollOffset.toDp() }
+                    var imageOffset by remember { mutableStateOf(Offset.Zero) }
 
-                    LazyColumn(
-                        state = listState,
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        itemsIndexed(chunkedItems) { _, rowItems ->
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                for (item in rowItems) {
-                                    if (pageId != null) {
-                                        MemoItem(MemoContents = item, modifier = Modifier.weight(1f),memoModel,pageId)
-                                    }
-                                }
-                                if (rowItems.size < 2) {
-                                    for (i in rowItems.size until 2) {
-                                        Spacer(modifier = Modifier.weight(1f))
-                                    }
-                                }
-                            }
-                        }
-
-                    }
-                    stickerViewModel.selectedArray.mapIndexed { idx, sticker ->
-                        var xdp = with(LocalDensity.current) { sticker.offsetX.toDp() }
-                        var ydp = with(LocalDensity.current) { sticker.offsetY.toDp() }
-                        Box(
-                            modifier = Modifier
-                                .offset(
-                                    x = xdp,
-                                    y = ydp - scrollDp
-                                )
-                                .height(130.dp)
-                                .width(130.dp)
-                                .clickable {
-                                    stickerViewModel.toggleDeleteButton(idx)
-                                }
-                                .onGloballyPositioned { layoutCoordinates ->
-                                    imageOffset = layoutCoordinates.positionInRoot()
-                                }
+                    Box {
+                        val chunkedItems = memoList.chunked(2)
+                        LazyColumn(
+                            state = listState,
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Image(
-                                painter = BitmapPainter(
-                                    sticker.sticker?.toBitmap()!!.asImageBitmap()
-                                ),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(130.dp)
-                                    .padding(top = 15.dp)
-
-                            )
-                            if (sticker.deletable) {
-                                IconButton(
-                                    onClick = {
-                                        stickerViewModel.removeSticker(idx)
-                                    },
-                                    modifier = Modifier
-                                        .align(Alignment.TopEnd)
+                            itemsIndexed(chunkedItems) { _, rowItems ->
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-
-                                    Icon(
-                                        imageVector = Icons.Default.Close,
-                                        contentDescription = null,
-                                        tint = Color.Red,
-                                        modifier = Modifier.size(100.dp)
-                                    )
-
+                                    for (item in rowItems) {
+                                        if (pageId != null) {
+                                            MemoItem(MemoContents = item, modifier = Modifier.weight(1f), memoModel, pageId)
+                                        }
+                                    }
+                                    if (rowItems.size < 2) {
+                                        for (i in rowItems.size until 2) {
+                                            Spacer(modifier = Modifier.weight(1f))
+                                        }
+                                    }
                                 }
                             }
-
                         }
-                        LaunchedEffect(imageOffset) {
-                            println("Image offset: $imageOffset")
-
+                        stickerViewModel.selectedArray.mapIndexed { idx, sticker ->
+                            var xdp = with(LocalDensity.current) { sticker.offsetX.toDp() }
+                            var ydp = with(LocalDensity.current) { sticker.offsetY.toDp() }
+                            Box(
+                                modifier = Modifier
+                                    .offset(x = xdp, y = ydp - scrollDp)
+                                    .height(130.dp)
+                                    .width(130.dp)
+                                    .clickable {
+                                        stickerViewModel.toggleDeleteButton(idx)
+                                    }
+                                    .onGloballyPositioned { layoutCoordinates ->
+                                        imageOffset = layoutCoordinates.positionInRoot()
+                                    }
+                            ) {
+                                Image(
+                                    painter = BitmapPainter(sticker.sticker?.toBitmap()!!.asImageBitmap()),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(130.dp).padding(top = 15.dp)
+                                )
+                                if (sticker.deletable) {
+                                    IconButton(
+                                        onClick = {
+                                            stickerViewModel.removeSticker(idx)
+                                        },
+                                        modifier = Modifier.align(Alignment.TopEnd)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Close,
+                                            contentDescription = null,
+                                            tint = Color.Red,
+                                            modifier = Modifier.size(100.dp)
+                                        )
+                                    }
+                                }
+                            }
+                            LaunchedEffect(imageOffset) {
+                                println("Image offset: $imageOffset")
+                            }
                         }
                     }
                     MainScreen()
@@ -319,11 +300,7 @@ fun DrawerContent(navController: NavController) {
                     navController.navigate(Routes.Home.route)
                 }
         )
-        Text(
-            text = "Team5",
-            fontSize = 24.sp,
-            modifier = Modifier.padding(16.dp)
-        )
+
         Text(
             text = "팀원 소개",
             fontSize = 24.sp,
