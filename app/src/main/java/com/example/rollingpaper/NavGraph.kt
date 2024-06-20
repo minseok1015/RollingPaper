@@ -64,7 +64,7 @@ fun Graph(navController: NavHostController, kakaoAuthViewModel: KakaoAuthViewMod
             val pageId = backStackEntry.arguments?.getString("pageId")
             val title = backStackEntry.arguments?.getString("title")
             val theme = backStackEntry.arguments?.getString("theme")?.toIntOrNull()
-            MainPageScreen(pageId = pageId, title = title, theme = theme, navController = navController, memoModel = memoModel, kakaoAuthViewModel = kakaoAuthViewModel)
+            MainPageScreen(pageId = pageId, title = title, theme = theme, navController = navController, memoModel = memoModel, stickerViewModel= stickerViewModel,kakaoAuthViewModel = kakaoAuthViewModel)
         }
 
         composable(route = Routes.Memo.route) { backStackEntry ->
