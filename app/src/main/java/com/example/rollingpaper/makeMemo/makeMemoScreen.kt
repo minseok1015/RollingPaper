@@ -287,7 +287,21 @@ fun makeMemoScreen(pageId: String, navController: NavController, kakaoAuthViewMo
 
             Button(
                 onClick = {
-                    memoModel.insertMemo(pageId, Memo(2, text, author, 14, 1, 2, 14, 14, 1))
+                    val newMemoId = memoModel.getNextMemoId()
+                    memoModel.insertMemo(
+                        pageId,
+                        Memo(
+                            memoId = newMemoId,
+                            content = text,
+                            name = if (anonymous) "익명" else author,
+                            font = selectedFontIndex,
+                            fontSize = fontSize.value.toInt(),
+                            fontColor = FontColors.fontColorsArray.indexOfFirst { it.color == textColor },
+                            memoColor = Colors.colorsArray.indexOfFirst { it.color == backgroundColor },
+                            like = 0,
+
+                            )
+                    )
                     memoModel.getPageInfo(pageId, onSuccess = { page ->
                         navController.navigate("Page/${page.pageId}?title=${page.title}&theme=${page.theme}")
                     }, onError = {
