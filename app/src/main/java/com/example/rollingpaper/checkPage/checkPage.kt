@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -37,7 +38,7 @@ fun checkPage(navController: NavController, memoViewModel: MemoViewModel = viewM
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
+            .background(Color(0xFFF5EED3))
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -46,6 +47,7 @@ fun checkPage(navController: NavController, memoViewModel: MemoViewModel = viewM
             text = "입장하기",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
+            color = Color.Black,
             modifier = Modifier.padding(bottom = 20.dp)
         )
 
@@ -55,35 +57,50 @@ fun checkPage(navController: NavController, memoViewModel: MemoViewModel = viewM
             label = { Text("코드를 입력하세요.") },
             shape = RoundedCornerShape(10.dp),
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(0.8f)
                 .background(Color.LightGray, shape = RoundedCornerShape(10.dp))
         )
 
-        Button(
-            onClick = {
-                val pageId = text
-                if (pageId.isEmpty()) {
-                    Toast.makeText(context, "Page ID를 입력하세요", Toast.LENGTH_SHORT).show()
-                } else {
-                    memoViewModel.getPageInfo(pageId, onSuccess = { page ->
-                        navController.navigate("Page/${page.pageId}?title=${page.title}&theme=${page.theme}")
-                    }, onError = {
-                        Toast.makeText(context, "해당 페이지를 찾을 수 없습니다", Toast.LENGTH_SHORT).show()
-                    })
-                }
-            },
-            shape = RoundedCornerShape(50),
-            colors = ButtonDefaults.buttonColors(Color.Black),
+        Row(
             modifier = Modifier
                 .padding(top = 20.dp)
-                .fillMaxWidth()
-                .height(50.dp)
+                .fillMaxWidth(0.8f),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "확인하기", color = Color.White)
+            Button(
+                onClick = { navController.popBackStack() },
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(Color(0xFF3C352E)),
+                modifier = Modifier
+                    .height(50.dp)
+                    .weight(1f)
+                    .padding(end = 4.dp)
+            ) {
+                Text(text = "뒤로가기", color = Color.White, fontSize = 18.sp)
+            }
+
+            Button(
+                onClick = {
+                    val pageId = text
+                    if (pageId.isEmpty()) {
+                        Toast.makeText(context, "Page ID를 입력하세요", Toast.LENGTH_SHORT).show()
+                    } else {
+                        memoViewModel.getPageInfo(pageId, onSuccess = { page ->
+                            navController.navigate("Page/${page.pageId}?title=${page.title}&theme=${page.theme}")
+                        }, onError = {
+                            Toast.makeText(context, "해당 페이지를 찾을 수 없습니다", Toast.LENGTH_SHORT).show()
+                        })
+                    }
+                },
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(Color(0xFF3C352E)),
+                modifier = Modifier
+                    .height(50.dp)
+                    .weight(1f)
+                    .padding(start = 4.dp)
+            ) {
+                Text(text = "확인하기", color = Color.White, fontSize = 18.sp)
+            }
         }
     }
-
-
 }
-
-

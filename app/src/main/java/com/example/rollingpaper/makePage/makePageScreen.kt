@@ -1,4 +1,7 @@
+package com.example.rollingpaper.checkPage
 
+import PageViewModel
+import PageViewModelFactory
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +16,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -44,10 +49,10 @@ fun makePage(navController: NavController,pageViewModel: PageViewModel = viewMod
     var selectedTheme by remember { mutableStateOf(1) }
     var titleText by remember { mutableStateOf("") }
 
-
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color(0xFFF5EED3))
             .padding(16.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -57,10 +62,9 @@ fun makePage(navController: NavController,pageViewModel: PageViewModel = viewMod
             value = titleText,
             onValueChange = { titleText = it },
             placeholder = { Text("이름이나 단어, 문장도 가능해요.") },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(0.8f),
             maxLines = 1
         )
-
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -74,20 +78,36 @@ fun makePage(navController: NavController,pageViewModel: PageViewModel = viewMod
 
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
+                .fillMaxWidth(0.8f)
+                .padding(top = 20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            OutlinedButton(onClick = { navController.navigate(Routes.Home.route) }) {
-                Text("뒤로가기", fontWeight = FontWeight.Bold)
+            Button(
+                onClick = { navController.navigate(Routes.Home.route) },
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(Color(0xFF3C352E)),
+                modifier = Modifier
+                    .height(50.dp)
+                    .weight(1f)
+                    .padding(end = 8.dp)
+            ) {
+                Text("뒤로가기", fontWeight = FontWeight.Bold, color = Color.White)
             }
-            OutlinedButton(onClick = {
-                val pageId = generatePageId()
-                val newPage = Page(pageId = pageId, theme = selectedTheme, title = titleText)
-                pageViewModel.insertPage(newPage)
-                navController.navigate("Page/${pageId}?title=${titleText}&theme=${selectedTheme}")
-            }) {
-                Text("페이지 생성", fontWeight = FontWeight.Bold)
+            Button(
+                onClick = {
+                    val pageId = generatePageId()
+                    val newPage = Page(pageId = pageId, theme = selectedTheme, title = titleText)
+                    pageViewModel.insertPage(newPage)
+                    navController.navigate("Page/${pageId}?title=${titleText}&theme=${selectedTheme}")
+                },
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(Color(0xFF3C352E)),
+                modifier = Modifier
+                    .height(50.dp)
+                    .weight(1f)
+                    .padding(start = 8.dp)
+            ) {
+                Text("페이지 생성", fontWeight = FontWeight.Bold, color = Color.White)
             }
         }
     }
@@ -97,7 +117,7 @@ fun makePage(navController: NavController,pageViewModel: PageViewModel = viewMod
 fun ThemeOption(text: String, color: Color, isSelected: Boolean, onClick: () -> Unit) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxWidth(0.8f)
             .padding(vertical = 8.dp)
             .clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
@@ -113,7 +133,6 @@ fun ThemeOption(text: String, color: Color, isSelected: Boolean, onClick: () -> 
         RadioButton(selected = isSelected, onClick = onClick)
     }
 }
-
 
 fun generatePageId(): String {
     return UUID.randomUUID().toString().replace("-", "").substring(0, 10)

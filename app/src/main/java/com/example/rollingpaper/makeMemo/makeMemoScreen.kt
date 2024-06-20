@@ -14,6 +14,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -31,7 +35,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -243,17 +246,17 @@ fun makeMemoScreen(pageId: String, navController: NavController, kakaoAuthViewMo
                 .height(56.dp)
         ) {
             NavigationBarItem(
-                icon = { Icon(painter = painterResource(R.drawable.grr), contentDescription = "Text") },
+                icon = { Icon(Icons.Default.Edit, contentDescription = "Text Size") },
                 selected = false,
                 onClick = { showFontSizeDialog = true }
             )
             NavigationBarItem(
-                icon = { Icon(painter = painterResource(R.drawable.grr), contentDescription = "Alignment") },
+                icon = { Icon(Icons.Default.LocationOn, contentDescription = "Text Alignment") },
                 selected = false,
                 onClick = { showTextAlignDialog = true }
             )
             NavigationBarItem(
-                icon = { Icon(painter = painterResource(R.drawable.grr), contentDescription = "Colors") },
+                icon = { Icon(Icons.Default.Favorite, contentDescription = "Text Color") },
                 selected = false,
                 onClick = { showColorDialog = true }
             )
@@ -263,34 +266,42 @@ fun makeMemoScreen(pageId: String, navController: NavController, kakaoAuthViewMo
                 onClick = { showBackgroundColorDialog = true }
             )
         }
-        Button(onClick = {
-            val newMemoId = memoModel.getNextMemoId()
-            memoModel.insertMemo(
-                pageId,
-                Memo(
-                    memoId = newMemoId,
-                    content = text,
-                    name = if (anonymous) "익명" else author,
-                    font = selectedFontIndex,
-                    fontSize = fontSize.value.toInt(),
-                    fontColor = FontColors.fontColorsArray.indexOfFirst { it.color == textColor },
-                    memoColor = Colors.colorsArray.indexOfFirst { it.color == backgroundColor },
-                    like = 0,
-
-                )
-            )
-            memoModel.getPageInfo(pageId, onSuccess = { page ->
-                navController.navigate("Page/${page.pageId}?title=${page.title}&theme=${page.theme}")
-            }, onError = {
-                Toast.makeText(context, "해당 페이지를 찾을 수 없습니다", Toast.LENGTH_SHORT).show()
-            })
-        },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Black
-            )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("확인", color = Color.White)
+            Button(
+                onClick = { navController.popBackStack() },
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(Color(0xFF3C352E)),
+                modifier = Modifier
+                    .height(50.dp)
+                    .weight(1f)
+                    .padding(end = 8.dp)
+            ) {
+                Text("뒤로가기", fontWeight = FontWeight.Bold, color = Color.White)
+            }
+
+            Button(
+                onClick = {
+                    memoModel.insertMemo(pageId, Memo(2, text, author, 14, 1, 2, 14, 14, 1))
+                    memoModel.getPageInfo(pageId, onSuccess = { page ->
+                        navController.navigate("Page/${page.pageId}?title=${page.title}&theme=${page.theme}")
+                    }, onError = {
+                        Toast.makeText(context, "해당 페이지를 찾을 수 없습니다", Toast.LENGTH_SHORT).show()
+                    })
+                },
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(Color(0xFF3C352E)),
+                modifier = Modifier
+                    .height(50.dp)
+                    .weight(1f)
+                    .padding(start = 8.dp)
+            ) {
+                Text("메모 만들기", fontWeight = FontWeight.Bold, color = Color.White)
+            }
         }
     }
 }

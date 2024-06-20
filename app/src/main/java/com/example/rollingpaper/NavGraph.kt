@@ -10,13 +10,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.rollingpaper.checkPage.checkPage
+import com.example.rollingpaper.checkPage.makePage
 import com.example.rollingpaper.homePage.homeScreen
 import com.example.rollingpaper.homePage.homeScreen_no
 import com.example.rollingpaper.mainPage.MainPageScreen
 import com.example.rollingpaper.makeMemo.makeMemoScreen
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
-import makePage
 
 sealed class Routes(val route: String) {
     object Home : Routes("Home")
