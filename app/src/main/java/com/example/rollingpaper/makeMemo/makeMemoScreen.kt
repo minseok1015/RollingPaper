@@ -281,26 +281,30 @@ fun makeMemoScreen(pageId: String, navController: NavController, kakaoAuthViewMo
 
             Button(
                 onClick = {
-                    val newMemoId = memoModel.getNextMemoId()
-                    memoModel.insertMemo(
-                        pageId,
-                        Memo(
-                            memoId = newMemoId,
-                            content = text,
-                            name = if (anonymous) "익명" else author,
-                            font = selectedFontIndex,
-                            fontSize = fontSize.value.toInt(),
-                            fontColor = FontColors.fontColorsArray.indexOfFirst { it.color == textColor },
-                            memoColor = Colors.colorsArray.indexOfFirst { it.color == backgroundColor },
-                            like = 0,
+                    if (text.isEmpty()) {
+                        Toast.makeText(context, "텍스트를 입력해 주세요", Toast.LENGTH_SHORT).show()
+                    } else {
+                        val newMemoId = memoModel.getNextMemoId()
+                        memoModel.insertMemo(
+                            pageId,
+                            Memo(
+                                memoId = newMemoId,
+                                content = text,
+                                name = if (anonymous) "익명" else author,
+                                font = selectedFontIndex,
+                                fontSize = fontSize.value.toInt(),
+                                fontColor = FontColors.fontColorsArray.indexOfFirst { it.color == textColor },
+                                memoColor = Colors.colorsArray.indexOfFirst { it.color == backgroundColor },
+                                like = 0,
 
-                            )
-                    )
-                    memoModel.getPageInfo(pageId, onSuccess = { page ->
-                        navController.navigate("Page/${page.pageId}?title=${page.title}&theme=${page.theme}")
-                    }, onError = {
-                        Toast.makeText(context, "해당 페이지를 찾을 수 없습니다", Toast.LENGTH_SHORT).show()
-                    })
+                                )
+                        )
+                        memoModel.getPageInfo(pageId, onSuccess = { page ->
+                            navController.navigate("Page/${page.pageId}?title=${page.title}&theme=${page.theme}")
+                        }, onError = {
+                            Toast.makeText(context, "해당 페이지를 찾을 수 없습니다", Toast.LENGTH_SHORT).show()
+                        })
+                    }
                 },
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(Color(0xFF3C352E)),
