@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.rollingpaper.TeamPage.TeamPageScreen
 import com.example.rollingpaper.checkPage.checkPage
 import com.example.rollingpaper.checkPage.makePage
 import com.example.rollingpaper.homePage.homeScreen
@@ -26,6 +27,8 @@ sealed class Routes(val route: String) {
     object MakePage : Routes("MakePage")
     object EnterPage : Routes("EnterPage")
     object SharePage : Routes("SharePage/{pageId}")
+
+    object TeamPage :  Routes("TeamPage")
 }
 
 @Composable
@@ -86,6 +89,9 @@ fun Graph(navController: NavHostController, kakaoAuthViewModel: KakaoAuthViewMod
             if (pageId != null) {
                 sharePageScreen(navController,kakaoAuthViewModel,pageId)
             }
+        }
+        composable(route = Routes.TeamPage.route) {
+            TeamPageScreen(navController)
         }
     }
 }
