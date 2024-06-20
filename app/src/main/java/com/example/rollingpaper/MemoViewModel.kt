@@ -67,6 +67,27 @@ class MemoViewModel(private val application: Application, private val repository
         }
     }
 
+    fun getAllMemos(){
+        viewModelScope.launch {
+            repository.insertSticker(pageId, stickerId, x, y)
+        }
+    }
+
+    fun deleteSticker(pageId:String, stickerId:String) {
+        viewModelScope.launch {
+            repository.deleteSticker(pageId, stickerId)
+        }
+    }
+
+
+    fun getAllStickers(pageId: String, context: Context) {
+        viewModelScope.launch {
+            repository.getAllStickers(pageId, context).collect{
+                _stickerList.value = it
+            }
+        }
+    }
+
     fun getAllMemos(pageId: String) {
         viewModelScope.launch {
             repository.getAllMemos(pageId).collect {

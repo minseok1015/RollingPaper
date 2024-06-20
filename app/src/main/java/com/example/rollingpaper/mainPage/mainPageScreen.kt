@@ -66,6 +66,7 @@ import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
@@ -112,6 +113,14 @@ fun MainPageScreen(
         }
         memoModel.getAllStickers(pageId!!, context)
         memoModel.stickerList.collect { it ->
+            stickerViewModel.selectedArray.addAll(it)
+        }
+//    val scrollOffset by remember { derivedStateOf { lazyListState.firstVisibleItemScrollOffset } }
+    LaunchedEffect(Unit) {
+//        memoModel.getAllMemos()
+        memoModel.getAllStickers(pageId!!, context)
+//        stickerViewModel.selectedArray = memoModel.stickerList.collectAsState(initial= emptyList()).value.toSnapshotStateList()
+        memoModel.stickerList.collect{it ->
             stickerViewModel.selectedArray.addAll(it)
         }
     }
@@ -228,26 +237,44 @@ fun MainPageScreen(
                                 }
                             }
                         }
-                        stickerViewModel.selectedArray.mapIndexed { idx, sticker ->
-                            var xdp = with(LocalDensity.current) { sticker.offsetX.toDp() }
-                            var ydp = with(LocalDensity.current) { sticker.offsetY.toDp() }
-                            Box(
+
+                    }
+                    stickerViewModel.selectedArray.mapIndexed { idx, sticker ->
+                        var xdp = with(LocalDensity.current) { sticker.offsetX.toDp() }
+                        var ydp = with(LocalDensity.current) { sticker.offsetY.toDp() }
+                        Box(
+                            modifier = Modifier
+                                .offset(
+                                    x = xdp,
+                                    y = ydp - scrollDp
+                                )
+                                .height(130.dp)
+                                .width(130.dp)
+                                .clickable {
+                                    stickerViewModel.toggleDeleteButton(idx)
+                                }
+                                .onGloballyPositioned { layoutCoordinates ->
+                                    imageOffset = layoutCoordinates.positionInRoot()
+                                }
+                        ) {
+                            Image(
+                                painter = BitmapPainter(
+                                    sticker.sticker?.toBitmap()!!.asImageBitmap()
+                                ),
+//                                painter = painterResource(id = R.drawable.ku10),
+                                contentDescription = null,
                                 modifier = Modifier
-                                    .offset(x = xdp, y = ydp - scrollDp)
-                                    .height(130.dp)
-                                    .width(130.dp)
-                                    .clickable {
-                                        stickerViewModel.toggleDeleteButton(idx)
-                                    }
-                                    .onGloballyPositioned { layoutCoordinates ->
-                                        imageOffset = layoutCoordinates.positionInRoot()
-                                    }
-                            ) {
-                                Image(
-                                    painter = BitmapPainter(
-                                        sticker.sticker?.toBitmap()!!.asImageBitmap()
-                                    ),
-                                    contentDescription = null,
+                                    .size(130.dp)
+                                    .padding(top = 15.dp)
+
+                            )
+                            if (sticker.deletable) {
+                                IconButton(
+                                    onClick = {
+                                        val stId = stickerViewModel.selectedArray[idx].id
+                                        memoModel.deleteSticker(pageId!!, stId)
+                                        stickerViewModel.removeSticker(idx)
+                                    },
                                     modifier = Modifier
                                         .size(130.dp)
                                         .padding(top = 15.dp)
