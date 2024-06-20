@@ -114,7 +114,6 @@ fun MainScreen(
                     text = "완료"
                 )
             }
-            Log.d("mymy", "cahne")
         }
         if (stickerViewModel.show.value) {
             Log.d("mymy", "hello")

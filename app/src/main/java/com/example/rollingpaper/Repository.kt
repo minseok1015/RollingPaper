@@ -38,64 +38,10 @@ class Repository(private val table: DatabaseReference) {
     fun getAllStickers(pageId: String, context: Context): Flow<List<SelectedSticker>> =
         callbackFlow {
 
-            val stListener2 = object : ChildEventListener {
-                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                    val stli = mutableListOf<SelectedSticker>()
-                    for (itemSnpashot in snapshot.children) {
-                        var imgIdx = itemSnpashot.getKey().toString().split("X")[0]
-
-                        val resourceId = context.resources.getIdentifier(
-                            "ku${imgIdx}",
-                            "drawable",
-                            context.packageName
-                        )
-
-//                        var x = itemSnpashot.child("x").getValue().toString().toFloat()
-                        var x = itemSnpashot.child("x").getValue()
-                        var y = itemSnpashot.child("y").getValue()
-                        var fx: Float = 0.0f
-                        var fy: Float = 0.0f
-                        if (x != null && y != null) {
-                            fx = x.toString().toFloat()
-                            fy = y.toString().toFloat()
-                        }
-
-                        var id = itemSnpashot.getKey().toString()
-                        stli.add(
-                            SelectedSticker(
-                                sticker = ContextCompat.getDrawable(context, resourceId),
-                                id = id,
-                                offsetX = fx,
-                                offsetY = fy,
-                            )
-                        )
-                    }
-                    trySend(stli)
-                }
-
-                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                    TODO("Not yet implemented")
-                }
-
-                override fun onChildRemoved(snapshot: DataSnapshot) {
-                    TODO("Not yet implemented")
-                }
-
-                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                    TODO("Not yet implemented")
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
-
-            }
-
-//            val stListner = object : ValueEventListener {
-//                override fun onDataChange(snapshot: DataSnapshot) {
+//            val stListener2 = object : ChildEventListener {
+//                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
 //                    val stli = mutableListOf<SelectedSticker>()
 //                    for (itemSnpashot in snapshot.children) {
-//                        Log.d("mymyss", snapshot.children.toString())
 //                        var imgIdx = itemSnpashot.getKey().toString().split("X")[0]
 //
 //                        val resourceId = context.resources.getIdentifier(
@@ -127,18 +73,72 @@ class Repository(private val table: DatabaseReference) {
 //                    trySend(stli)
 //                }
 //
+//                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+//                    TODO("Not yet implemented")
+//                }
+//
+//                override fun onChildRemoved(snapshot: DataSnapshot) {
+//                    TODO("Not yet implemented")
+//                }
+//
+//                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+//                    TODO("Not yet implemented")
+//                }
+//
 //                override fun onCancelled(error: DatabaseError) {
 //                    TODO("Not yet implemented")
 //                }
+//
 //            }
-//            table.child("${pageId}/sticker").addValueEventListener(stListner)
-//            awaitClose {
-//                table.child("${pageId}/sticker").removeEventListener(stListner)
-//            }
-            table.child("${pageId}/sticker").addChildEventListener(stListener2)
-            awaitClose {
-                table.child("${pageId}/sticker").removeEventListener(stListener2)
+
+            val stListener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val stli = mutableListOf<SelectedSticker>()
+                    for (itemSnpashot in snapshot.children) {
+                        Log.d("mymyss", snapshot.children.toString())
+                        var imgIdx = itemSnpashot.getKey().toString().split("X")[0]
+
+                        val resourceId = context.resources.getIdentifier(
+                            "ku${imgIdx}",
+                            "drawable",
+                            context.packageName
+                        )
+//                        var x = itemSnpashot.child("x").getValue().toString().toFloat()
+                        var x = itemSnpashot.child("x").getValue()
+                        var y = itemSnpashot.child("y").getValue()
+                        var fx: Float = 0.0f
+                        var fy: Float = 0.0f
+                        if (x != null && y != null) {
+                            fx = x.toString().toFloat()
+                            fy = y.toString().toFloat()
+                        }
+
+                        var id = itemSnpashot.getKey().toString()
+                        stli.add(
+                            SelectedSticker(
+                                sticker = ContextCompat.getDrawable(context, resourceId),
+                                id = id,
+                                offsetX = fx,
+                                offsetY = fy,
+                            )
+                        )
+
+                    }
+                    trySend(stli)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
             }
+            table.child("${pageId}/sticker").addValueEventListener(stListener)
+            awaitClose {
+                table.child("${pageId}/sticker").removeEventListener(stListener)
+            }
+//            table.child("${pageId}/sticker").addChildEventListener(stListener)
+//            awaitClose {
+//                table.child("${pageId}/sticker").removeEventListener(stListener)
+//            }
         }
 
 

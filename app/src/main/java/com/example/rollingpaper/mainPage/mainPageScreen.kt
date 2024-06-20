@@ -115,137 +115,136 @@ fun MainPageScreen(
             stickerViewModel.selectedArray.addAll(it)
         }
         memoModel.getAllStickers(pageId!!, context)
-//        stickerViewModel.selectedArray = memoModel.stickerList.collectAsState(initial= emptyList()).value.toSnapshotStateList()
-            memoModel.stickerList.collect { it ->
-                stickerViewModel.selectedArray.addAll(it)
-            }
+        memoModel.stickerList.collect { it ->
+            stickerViewModel.selectedArray.addAll(it)
         }
+    }
 
-        ModalNavigationDrawer(
-            drawerState = drawerState,
-            drawerContent = {
-                ModalDrawerSheet(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .background(Color.White),
-                    content = {
-                        DrawerContent(navController)
-                    }
-                )
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .background(Color.White),
+                content = {
+                    DrawerContent(navController)
+                }
+            )
+        },
+        scrimColor = Color.Black.copy(alpha = 0.32f)
+    ) {
+        Scaffold(
+            topBar = {
+                title?.let {
+                    TopBar(
+                        onMenuClick = { scope.launch { drawerState.open() } },
+                        kakaoAuthViewModel,
+                        pageId,
+                        it,
+                        navController
+                    )
+                }
             },
-            scrimColor = Color.Black.copy(alpha = 0.32f)
-        ) {
-            Scaffold(
-                topBar = {
-                    title?.let {
-                        TopBar(
-                            onMenuClick = { scope.launch { drawerState.open() } },
-                            kakaoAuthViewModel,
-                            pageId,
-                            it,
-                            navController
-                        )
-                    }
-                },
-                floatingActionButton = {
-                    Column(
-                        horizontalAlignment = Alignment.End,
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier.padding(16.dp)
+            floatingActionButton = {
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    FloatingActionButton(
+                        onClick = {
+                            pageId?.let {
+                                val route = "Memo/$it?title=$title&theme=$theme"
+                                navController.navigate(route)
+                            }
+                        },
+                        containerColor = Color.Black,
+                        contentColor = Color.White,
+                        shape = CircleShape
                     ) {
-                        FloatingActionButton(
-                            onClick = {
-                                pageId?.let {
-                                    val route = "Memo/$it?title=$title&theme=$theme"
-                                    navController.navigate(route)
-                                }
-                            },
-                            containerColor = Color.Black,
-                            contentColor = Color.White,
-                            shape = CircleShape
-                        ) {
-                            Icon(imageVector = Icons.Outlined.Edit, contentDescription = "글쓰기")
-                        }
-                        FloatingActionButton(
-                            onClick = {
-                                stickerViewModel.changeShow()
-                                Log.d("mine", stickerViewModel.show.value.toString())
-                                stickerViewModel.changeEmoticonShow()
-                            },
-                            containerColor = Color.Black,
-                            contentColor = Color.White,
-                            shape = CircleShape
-                        ) {
-                            Icon(imageVector = Icons.Outlined.Face, contentDescription = "스티커")
-                        }
+                        Icon(imageVector = Icons.Outlined.Edit, contentDescription = "글쓰기")
+                    }
+                    FloatingActionButton(
+                        onClick = {
+                            stickerViewModel.changeShow()
+                            Log.d("mine", stickerViewModel.show.value.toString())
+                            stickerViewModel.changeEmoticonShow()
+                        },
+                        containerColor = Color.Black,
+                        contentColor = Color.White,
+                        shape = CircleShape
+                    ) {
+                        Icon(imageVector = Icons.Outlined.Face, contentDescription = "스티커")
                     }
                 }
-            ) { innerPadding ->
-                Box(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize()
+            }
+        ) { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            ) {
+                Image(
+                    painter = themeBackground,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+                Column(
+                    modifier = Modifier.fillMaxSize(),
                 ) {
-                    Image(
-                        painter = themeBackground,
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                    ) {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        val listState = rememberLazyListState()
-                        val firstVisibleItemIndex = listState.firstVisibleItemIndex
-                        val firstVisibleItemScrollOffset = listState.firstVisibleItemScrollOffset
-                        val scrollDp =
-                            with(LocalDensity.current) { (firstVisibleItemIndex * 180).dp + firstVisibleItemScrollOffset.toDp() }
-                        var imageOffset by remember { mutableStateOf(Offset.Zero) }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    val listState = rememberLazyListState()
+                    val firstVisibleItemIndex = listState.firstVisibleItemIndex
+                    val firstVisibleItemScrollOffset = listState.firstVisibleItemScrollOffset
+                    val scrollDp =
+                        with(LocalDensity.current) { (firstVisibleItemIndex * 180).dp + firstVisibleItemScrollOffset.toDp() }
+                    var imageOffset by remember { mutableStateOf(Offset.Zero) }
 
-                        Box {
-                            val chunkedItems = memoList.chunked(2)
-                            LazyColumn(
-                                state = listState,
-                                contentPadding = PaddingValues(16.dp),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                itemsIndexed(chunkedItems) { _, rowItems ->
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                    ) {
-                                        for (item in rowItems) {
-                                            if (pageId != null) {
-                                                MemoItem(
-                                                    MemoContents = item,
-                                                    modifier = Modifier.weight(1f),
-                                                    memoModel,
-                                                    pageId
-                                                )
-                                            }
+                    Box {
+                        val chunkedItems = memoList.chunked(2)
+                        LazyColumn(
+                            state = listState,
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            itemsIndexed(chunkedItems) { _, rowItems ->
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    for (item in rowItems) {
+                                        if (pageId != null) {
+                                            MemoItem(
+                                                MemoContents = item,
+                                                modifier = Modifier.weight(1f),
+                                                memoModel,
+                                                pageId
+                                            )
                                         }
-                                        if (rowItems.size < 2) {
-                                            for (i in rowItems.size until 2) {
-                                                Spacer(modifier = Modifier.weight(1f))
-                                            }
+                                    }
+                                    if (rowItems.size < 2) {
+                                        for (i in rowItems.size until 2) {
+                                            Spacer(modifier = Modifier.weight(1f))
                                         }
                                     }
                                 }
                             }
-
                         }
+
                         stickerViewModel.selectedArray.mapIndexed { idx, sticker ->
                             var xdp = with(LocalDensity.current) { sticker.offsetX.toDp() }
                             var ydp = with(LocalDensity.current) { sticker.offsetY.toDp() }
+
                             Box(
                                 modifier = Modifier
                                     .offset(
                                         x = xdp,
                                         y = ydp - scrollDp
                                     )
-                                    .height(130.dp)
-                                    .width(130.dp)
+                                    .height(60.dp)
+                                    .width(60.dp)
                                     .clickable {
                                         stickerViewModel.toggleDeleteButton(idx)
                                     }
@@ -257,12 +256,10 @@ fun MainPageScreen(
                                     painter = BitmapPainter(
                                         sticker.sticker?.toBitmap()!!.asImageBitmap()
                                     ),
-//                                painter = painterResource(id = R.drawable.ku10),
                                     contentDescription = null,
                                     modifier = Modifier
-                                        .size(130.dp)
+                                        .size(60.dp)
                                         .padding(top = 15.dp)
-
                                 )
                                 if (sticker.deletable) {
                                     IconButton(
@@ -279,154 +276,156 @@ fun MainPageScreen(
                                         )
                                     }
                                 }
-                                LaunchedEffect(imageOffset) {
-                                    println("Image offset: $imageOffset")
-                                }
+                            }
+                            LaunchedEffect(imageOffset) {
+                                println("Image offset: $imageOffset")
                             }
                         }
-//                        MainScreen(memoModel = memoModel, pageId = pageId!!)
+                        MainScreen(
+                            stickerViewModel = stickerViewModel,
+                            memoModel = memoModel,
+                            pageId = pageId!!
+                        )
                     }
-                    MainScreen(stickerViewModel = stickerViewModel, memoModel = memoModel, pageId = pageId!!)
                 }
             }
         }
     }
+}
 
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun TopBar(
-        onMenuClick: () -> Unit,
-        viewModel: KakaoAuthViewModel,
-        pageId: String?,
-        title: String,
-        navController: NavController
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopBar(
+    onMenuClick: () -> Unit,
+    viewModel: KakaoAuthViewModel,
+    pageId: String?,
+    title: String,
+    navController: NavController
+) {
+    TopAppBar(
+        title = { Text("제목: $title", fontSize = 20.sp) },
+        navigationIcon = {
+            IconButton(onClick = {
+                navController.navigate("SharePage/${pageId}")
+            }) {
+                Icon(
+                    imageVector = Icons.Default.Share,
+                    contentDescription = "Share"
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = onMenuClick) {
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = "Menu"
+                )
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.White,
+            titleContentColor = Color.Black,
+            actionIconContentColor = Color.Black
+        )
+    )
+}
+
+@Composable
+fun DrawerContent(navController: NavController) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
-        TopAppBar(
-            title = { Text("제목: $title", fontSize = 20.sp) },
-            navigationIcon = {
-                IconButton(onClick = {
-                    navController.navigate("SharePage/${pageId}")
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.Share,
-                        contentDescription = "Share"
-                    )
+        Text(
+            text = "홈",
+            fontSize = 24.sp,
+            modifier = Modifier
+                .padding(16.dp)
+                .clickable {
+                    navController.navigate(Routes.Home.route)
                 }
-            },
-            actions = {
-                IconButton(onClick = onMenuClick) {
-                    Icon(
-                        imageVector = Icons.Default.Menu,
-                        contentDescription = "Menu"
-                    )
+        )
+
+        Text(
+            text = "팀원 소개",
+            fontSize = 24.sp,
+            modifier = Modifier
+                .padding(16.dp)
+                .clickable {
+                    navController.navigate(Routes.TeamPage.route)
                 }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.White,
-                titleContentColor = Color.Black,
-                actionIconContentColor = Color.Black
-            )
         )
     }
+}
 
-    @Composable
-    fun DrawerContent(navController: NavController) {
-        Column(
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MemoItem(
+    MemoContents: Memo,
+    modifier: Modifier = Modifier,
+    memoModel: MemoViewModel,
+    pageId: String
+) {
+    val rotationAngle by remember { mutableStateOf(Random.nextFloat() * 10 - 5) } // -5도에서 5도 사이의 랜덤 각도
+    var likes by remember { mutableStateOf(MemoContents.like) }
+
+    Box(modifier = modifier.padding(8.dp)) {
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
+                .fillMaxWidth()
+                .height(150.dp)
+                .graphicsLayer(rotationZ = rotationAngle)
         ) {
-            Text(
-                text = "홈",
-                fontSize = 24.sp,
-                modifier = Modifier
-                    .padding(16.dp)
-                    .clickable {
-                        navController.navigate(Routes.Home.route)
-                    }
-            )
-
-            Text(
-                text = "팀원 소개",
-                fontSize = 24.sp,
-                modifier = Modifier
-                    .padding(16.dp)
-                    .clickable {
-                        navController.navigate(Routes.TeamPage.route)
-                    }
-            )
-        }
-    }
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun MemoItem(
-        MemoContents: Memo,
-        modifier: Modifier = Modifier,
-        memoModel: MemoViewModel,
-        pageId: String
-    ) {
-        val rotationAngle by remember { mutableStateOf(Random.nextFloat() * 10 - 5) } // -5도에서 5도 사이의 랜덤 각도
-        var likes by remember { mutableStateOf(MemoContents.like) }
-
-        Box(modifier = modifier.padding(8.dp)) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp)
-                    .graphicsLayer(rotationZ = rotationAngle)
+            Card(
+                modifier = Modifier.fillMaxSize(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Colors.getColorByIndex(
+                        MemoContents.memoColor
+                    )
+                ) // memoColor를 배경색으로 지정
             ) {
-                Card(
-                    modifier = Modifier.fillMaxSize(),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Colors.getColorByIndex(
-                            MemoContents.memoColor
-                        )
-                    ) // memoColor를 배경색으로 지정
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth()
-                            .fillMaxHeight(),
-                        verticalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = MemoContents.content,
-                            color = FontColors.getFontColorByIndex(MemoContents.fontColor),
-                            fontFamily = Fonts.getFontByIndex(MemoContents.font),
-                            fontSize = MemoContents.fontSize.sp
-                        )
-                        Text(
-                            text = MemoContents.name,
-                            color = FontColors.getFontColorByIndex(MemoContents.fontColor),
-                            fontFamily = Fonts.getFontByIndex(MemoContents.font)
-                        )
-                    }
-
-                }
-                BadgedBox(
+                Column(
                     modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .offset(x = (-8).dp, y = 8.dp),
-                    badge = {
-                        Badge {
-                            Text(text = "$likes")
-                        }
-                    }
+                        .padding(16.dp)
+                        .fillMaxWidth()
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Icon(
-                        Icons.Default.Favorite,
-                        contentDescription = null,
-                        tint = Color.Red,
-                        modifier = Modifier.clickable {
-                            likes++
-                            memoModel.increaseLike(pageId, MemoContents.memoId)
-                        }
+                    Text(
+                        text = MemoContents.content,
+                        color = FontColors.getFontColorByIndex(MemoContents.fontColor),
+                        fontFamily = Fonts.getFontByIndex(MemoContents.font),
+                        fontSize = MemoContents.fontSize.sp
+                    )
+                    Text(
+                        text = MemoContents.name,
+                        color = FontColors.getFontColorByIndex(MemoContents.fontColor),
+                        fontFamily = Fonts.getFontByIndex(MemoContents.font)
                     )
                 }
             }
+            BadgedBox(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .offset(x = (-8).dp, y = 8.dp),
+                badge = {
+                    Badge {
+                        Text(text = "$likes")
+                    }
+                }
+            ) {
+                Icon(
+                    Icons.Default.Favorite,
+                    contentDescription = null,
+                    tint = Color.Red,
+                    modifier = Modifier.clickable {
+                        likes++
+                        memoModel.increaseLike(pageId, MemoContents.memoId)
+                    }
+                )
+            }
         }
     }
-
+}
