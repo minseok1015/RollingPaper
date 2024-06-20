@@ -340,7 +340,8 @@ fun DrawerContent(navController: NavController) {
                     ) {
                         Text(text = MemoContents.content,
                         color = FontColors.getFontColorByIndex(MemoContents.fontColor),
-                        fontFamily = Fonts.getFontByIndex(MemoContents.font)
+                        fontFamily = Fonts.getFontByIndex(MemoContents.font),
+                            fontSize = MemoContents.fontSize.sp
                     )
                     Text(text = MemoContents.name,
                         color =  FontColors.getFontColorByIndex(MemoContents.fontColor),
