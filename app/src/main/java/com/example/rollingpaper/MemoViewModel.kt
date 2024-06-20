@@ -2,7 +2,6 @@ package com.example.rollingpaper
 
 import android.app.Application
 import android.content.Context
-import androidx.compose.runtime.Composable
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -52,26 +51,6 @@ class MemoViewModel(private val application: Application, private val repository
         }
     }
 
-    fun deleteSticker(pageId:String, stickerId:String) {
-        viewModelScope.launch {
-            repository.deleteSticker(pageId, stickerId)
-        }
-    }
-
-
-    fun getAllStickers(pageId: String, context: Context) {
-        viewModelScope.launch {
-            repository.getAllStickers(pageId, context).collect{
-                _stickerList.value = it
-            }
-        }
-    }
-
-    fun getAllMemos(){
-        viewModelScope.launch {
-            repository.insertSticker(pageId, stickerId, x, y)
-        }
-    }
 
     fun deleteSticker(pageId:String, stickerId:String) {
         viewModelScope.launch {
