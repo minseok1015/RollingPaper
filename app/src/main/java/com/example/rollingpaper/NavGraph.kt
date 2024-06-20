@@ -14,6 +14,7 @@ import com.example.rollingpaper.homePage.homeScreen
 import com.example.rollingpaper.homePage.homeScreen_no
 import com.example.rollingpaper.mainPage.MainPageScreen
 import com.example.rollingpaper.makeMemo.makeMemoScreen
+import com.example.rollingpaper.sharePage.sharePageScreen
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import makePage
@@ -24,6 +25,7 @@ sealed class Routes(val route: String) {
     object Memo : Routes("Memo/{pageId}?title={title}&theme={theme}")
     object MakePage : Routes("MakePage")
     object EnterPage : Routes("EnterPage")
+    object SharePage : Routes("SharePage/{pageId}")
 }
 
 @Composable
@@ -78,6 +80,12 @@ fun Graph(navController: NavHostController, kakaoAuthViewModel: KakaoAuthViewMod
 
         composable(route = Routes.EnterPage.route) {
             checkPage(navController, memoModel)
+        }
+        composable(route = Routes.SharePage.route) {backStackEntry ->
+            val pageId = backStackEntry.arguments?.getString("pageId")
+            if (pageId != null) {
+                sharePageScreen(navController,kakaoAuthViewModel,pageId)
+            }
         }
     }
 }
