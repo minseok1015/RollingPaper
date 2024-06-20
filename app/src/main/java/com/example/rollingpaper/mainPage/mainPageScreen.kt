@@ -26,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Face
 import androidx.compose.material3.Badge
@@ -120,7 +121,7 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
         Scaffold(
             topBar = { title?.let {
                 TopBar(onMenuClick = { scope.launch { drawerState.open() } }, kakaoAuthViewModel, pageId,
-                    it
+                    it,navController
                 )
             } },
             floatingActionButton = {
@@ -271,16 +272,17 @@ fun MainPageScreen(pageId: String?, title: String?, theme: Int?, navController: 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(onMenuClick: () -> Unit, viewModel: KakaoAuthViewModel, pageId: String?, title:String) {
+fun TopBar(onMenuClick: () -> Unit, viewModel: KakaoAuthViewModel, pageId: String?, title:String, navController: NavController) {
     TopAppBar(
         title = { Text("제목: $title", fontSize = 20.sp) },
         navigationIcon = {
             IconButton(onClick = {
                 // 공유하기 로직
-                viewModel.openPicker(pageId)
+//                viewModel.openPicker(pageId)
+                navController.navigate("SharePage/${pageId}")
             }) {
                 Icon(
-                    imageVector = Icons.Default.Favorite,
+                    imageVector = Icons.Default.Share,
                     contentDescription = "Share"
                 )
             }
